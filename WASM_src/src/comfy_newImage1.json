@@ -1,0 +1,40 @@
+{
+"##INSERT_Memory##":"",
+"##REPEAT_BEGIN##":"",
+  "##idx1##": {
+    "inputs": {
+      "width": "##imgW##",
+      "height": "##imgH##",
+      "batch_size": "1"
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  },
+  "##idx0##": {
+    "inputs": {
+      "filename_prefix": "##FileNameO##",
+      "samples": [
+        "##idx1##",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "SaveLatent"
+    }
+  },
+"##REPEAT_END##":"",
+  "999": {
+    "inputs": {
+      "width": "##imgW##",
+      "height": "##imgH##",
+      "batch_size": 1
+    },
+    "class_type": "EmptySD3LatentImage",
+    "_meta": {
+      "title": "EmptySD3LatentImage"
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+"##INSERT_Memory##":"",
+"##REPEAT_BEGIN##":"",
+  "##idx4##": {
+    "inputs": {
+      "latent": "##FileNameI##"
+    },
+    "class_type": "LoadLatent",
+    "_meta": {
+      "title": "LoadLatent"
+    }
+  },
+  "##idx3##": {
+    "inputs": {
+      "latent": "##FileNameP##"
+    },
+    "class_type": "LoadLatent",
+    "_meta": {
+      "title": "LoadLatent"
+    }
+  },
+  "##idx2##": {
+    "inputs": {
+      "image": "##FileNameM##",
+      "channel": "green"
+    },
+    "class_type": "LoadImageMask",
+    "_meta": {
+      "title": "Load Image (as Mask)"
+    }
+  },
+  "##idx1##": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "##idx4##",
+        0
+      ],
+      "source": [
+        "##idx3##",
+        0
+      ],
+      "mask": [
+        "##idx2##",
+        0
+      ]
+    },
+    "class_type": "LatentCompositeMasked",
+    "_meta": {
+      "title": "LatentCompositeMasked"
+    }
+  },
+  "##idx0##": {
+    "inputs": {
+      "filename_prefix": "##FileNameO##",
+      "samples": [
+        "##idx1##",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "SaveLatent"
+    }
+  },
+"##REPEAT_END##":"",
+  "777": {
+    "inputs": {
+      "width": "512",
+      "height": "512",
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  }
+}

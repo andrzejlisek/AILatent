@@ -1,0 +1,53 @@
+{
+"##INSERT_Memory##":"",
+"##LOAD_LATENT##":"",
+"##SAVE_BITMAP##":"",
+"##OPTION_Checkpoint_BEGIN##":"",
+  "9": {
+    "inputs": {
+      "ckpt_name": "##ModelNameVae##"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+"##OPTION_Checkpoint_END##":"",
+"##OPTION_SplitModel_BEGIN##":"",
+  "9": {
+    "inputs": {
+      "vae_name": "##ModelNameVae##"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+"##OPTION_SplitModel_END##":"",
+  "999": {
+    "inputs": {
+"##TILE##":"",
+      "samples": [
+        "2000",
+        0
+      ],
+"##OPTION_Checkpoint_BEGIN##":"",
+      "vae": [
+        "9",
+        2
+      ],
+"##OPTION_Checkpoint_END##":"",
+"##OPTION_SplitModel_BEGIN##":"",
+      "vae": [
+        "9",
+        0
+      ],
+"##OPTION_SplitModel_END##":"",
+    "dummy":"dummy"
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  }
+}

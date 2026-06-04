@@ -1,0 +1,164 @@
+{
+"##REPEAT_BEGIN##":"",
+  "##idx2##": {
+    "inputs": {
+      "latent": "##FileNameI##"
+    },
+    "class_type": "LoadLatent",
+    "_meta": {
+      "title": "LoadLatent"
+    }
+  },
+  "##idx5##": {
+    "inputs": {
+      "image": "##FileNameM##",
+      "channel": "green"
+    },
+    "class_type": "LoadImageMask",
+    "_meta": {
+      "title": "Load Image (as Mask)"
+    }
+  },
+  "##idx6##": {
+    "inputs": {
+      "samples": [
+        "##idx2##",
+        0
+      ],
+      "mask": [
+        "##idx5##",
+        0
+      ]
+    },
+    "class_type": "SetLatentNoiseMask",
+    "_meta": {
+      "title": "Set Latent Noise Mask"
+    }
+  },
+  "##idx1##": {
+    "inputs": {
+      "add_noise": "##AddNoise##",
+      "noise_seed": "##Seed##",
+      "steps": "##StepCount##",
+      "cfg": "##PromptCfg##",
+      "sampler_name": "##sampler##",
+      "scheduler": "##scheduler##",
+      "start_at_step": "##StepStart##",
+      "end_at_step": "##StepEnd##",
+      "return_with_leftover_noise": "##ReturnWithNoise##",
+      "denoise": 1,
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "2",
+        0
+      ],
+      "negative": [
+        "3",
+        0
+      ],
+      "latent_image": [
+        "##idx6##",
+        0
+      ]
+    },
+    "class_type": "KSamplerAdvanced",
+    "_meta": {
+      "title": "KSampler (Advanced)"
+    }
+  },
+  "##idx0##": {
+    "inputs": {
+      "filename_prefix": "##FileNameO##",
+      "samples": [
+        "##idx1##",
+        0
+      ]
+    },
+    "class_type": "SaveLatent",
+    "_meta": {
+      "title": "SaveLatent"
+    }
+  },
+"##REPEAT_END##":"",
+"##OPTION_Checkpoint_BEGIN##":"",
+  "1": {
+    "inputs": {
+      "ckpt_name": "##ModelNameDiff##"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+"##OPTION_Checkpoint_END##":"",
+"##OPTION_SplitModel_BEGIN##":"",
+  "1": {
+    "inputs": {
+      "unet_name": "##ModelNameDiff##",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "5": {
+    "inputs": {
+      "clip_name": "##ModelNameText##",
+      "type": "stable_diffusion",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+"##OPTION_SplitModel_END##":"",
+  "2": {
+    "inputs": {
+      "text": "##PromptPosi##",
+"##OPTION_Checkpoint_BEGIN##":"",
+      "clip": [
+        "1",
+        1
+      ],
+"##OPTION_Checkpoint_END##":"",
+"##OPTION_SplitModel_BEGIN##":"",
+      "clip": [
+        "5",
+        0
+      ],
+"##OPTION_SplitModel_END##":"",
+    "dummy":"dummy"
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "3": {
+    "inputs": {
+      "text": "##PromptNega##",
+"##OPTION_Checkpoint_BEGIN##":"",
+      "clip": [
+        "1",
+        1
+      ],
+"##OPTION_Checkpoint_END##":"",
+"##OPTION_SplitModel_BEGIN##":"",
+      "clip": [
+        "5",
+        0
+      ],
+"##OPTION_SplitModel_END##":"",
+    "dummy":"dummy"
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  }
+}
