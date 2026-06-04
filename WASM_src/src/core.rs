@@ -85,10 +85,19 @@ impl Core
         {
             let step_1 = self.stage_list[i].undo_redo_curr.steps_begin_value;
             let step_2 = self.stage_list[i].undo_redo_curr.steps_total_value;
-            let step_3 = (1000 - (step_1 * 1000 / step_2)).min(1000);
             let mut s = String::new();
-            //s.push_str(&format!("1-({}/{}) = {}", step_1, step_2, tools::int_to_str(step_3, -3)));
-            s.push_str(&tools::int_to_str(step_3, -3));
+            if step_2 > 0
+            {
+                let step_3 = (1000 - (step_1 * 1000 / step_2)).min(1000);
+                //s.push_str(&format!("1-({}/{}) = {}", step_1, step_2, tools::int_to_str(step_3, -3)));
+                s.push_str(&tools::int_to_str(step_3, -3));
+            }
+            else
+            {
+                let step_3 = 1000;
+                //s.push_str(&format!("1-({}/{}) = {}", step_1, step_2, tools::int_to_str(step_3, -3)));
+                s.push_str(&tools::int_to_str(step_3, -3));
+            }
             return s;
         }
 
