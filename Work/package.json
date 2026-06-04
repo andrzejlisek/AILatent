@@ -1,0 +1,15 @@
+{
+  "name": "ailatent",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "AILatent_bg.wasm",
+    "AILatent.js",
+    "AILatent.d.ts"
+  ],
+  "main": "AILatent.js",
+  "types": "AILatent.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

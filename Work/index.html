@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AILatent</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8">
+        <style>
+        
+            *, *::before, *::after {
+                box-sizing: border-box;
+            }
+        
+            body {
+                margin-top: 0px;
+                margin-bottom: 0px;
+                margin-right: 0px;
+                margin-left: 0px;
+                background-color: white;
+            }
+
+            input[type="range"] {
+                margin: 0;
+                width: 100%;
+                display: block;
+            }
+            
+            textarea {
+                resize:none;
+                width:100%;
+                //white-space:pre;
+                //overflow:auto;
+            }
+        </style>
+    </head>
+    <body>
+  
+        <div id="waiting" style="z-index:99;position:fixed;left:0px;top:0px;width:100%;height:100vh;background-color:#ffffff80">
+        </div>
+
+        <div id="screenContainer"><div id="screenWindow" style="width:100%;height:100vh;background-color:#000000;display:flex;justify-content:center;align-items:center;"><canvas width="100" height="100" id="screen"></canvas></div></div>
+
+        <br>
+        <input type="button" value="Prev stage" onclick="guiItemPrev()">
+        <input type="button" value="Next stage" onclick="guiItemNext()">
+        <input type="button" value="Sep tab" onclick="screenNewWindow(0)">
+        <input type="button" value="Sep win" onclick="screenNewWindow(1)">
+        <input type="button" value="Down scr" onclick="graphDownloadCollage()">
+        <input type="button" value="Down img" onclick="graphDownloadImages()">
+
+        <br>
+        <br>
+        Zoom <span id="screenZ"></span>%<br>
+        <input type="range" min="-40" max="40" value="20" id="screenZoom" oninput="screenRepaintAll()"><br>
+        Horizontal offset <span id="screenH"></span>%<br>
+        <input type="range" min="-100" max="100" value="0" id="screenOffsetX" oninput="screenRepaintAll()"><br>
+        Vertical offset <span id="screenV"></span>%<br>
+        <input type="range" min="-100" max="100" value="0" id="screenOffsetY" oninput="screenRepaintAll()"><br>
+        Screen size <span id="screenS"></span>%<br>
+        <input type="range" min="0" max="100" value="50" id="screenSize" oninput="screenRepaintAll()"><br>
+
+
+        <hr size="10" noshade="yes">
+
+
+        <select size="10" id="stages" style="width:100%" multiple="true">
+        </select>
+        <br>
+
+        <input type="button" onclick="projectAdd()" value="Add">
+        <input type="button" onclick="projectRem()" value="Remove">
+        <input type="button" onclick="projectMvUp()" value="Move up">
+        <input type="button" onclick="projectMvDn()" value="Move dn">
+        <br>
+        <br>
+
+        <table border="1">
+            <tr>
+                <td>Cols</td><td><input type="number" id="projectBatchW" value="1" min="1" max="100"></td>
+            </tr>
+            <tr>
+                <td>Rows</td><td><input type="number" id="projectBatchH" value="1" min="1" max="100"></td>
+            </tr>
+        </table>
+        <br>
+        <input type="button" onclick="projectStart()" value="Execute">
+        <input type="button" onclick="projectStageTest()" value="Test">
+
+        <hr size="10" noshade="yes">
+
+            <select id="stage_stage_type"></select>
+
+            <div id="stage_type_0" style="display:none">
+                <br>
+                <table border="1">
+                    <tr>
+                        <td>Source item</td><td><input type="text" id="stage_input_file" value=""></td>
+                    </tr>
+                    <tr>
+                        <td>Source row</td><td><input type="number" id="stage_input_row" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Source column</td><td><input type="number" id="stage_input_col" min="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Image width</td><td><input type="number" id="stage_input_width" value="1024" step="8"></td>
+                    </tr>
+                    <tr>
+                        <td>Image height</td><td><input type="number" id="stage_input_height" value="1024" step="8"></td>
+                    </tr>
+                    <tr>
+                        <td>Aspect ratio</td><td><span id="stage_info_aspect"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Area</td><td><span id="stage_info_area"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Zoom</td><td><input type="number" id="stage_input_zoom" value="100"></td>
+                    </tr>
+                    <tr>
+                        <td>Hori offset</td><td><input type="number" id="stage_input_offsetx" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Vert offset</td><td><input type="number" id="stage_input_offsety" value="0"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="stage_type_1" style="display:none">
+                <br>
+                Positive prompt<br>
+                <textarea rows="10" id="stage_process_prompt_posi"></textarea><br>
+                <br>
+                Negative prompt<br>
+                <textarea rows="10" id="stage_process_prompt_nega"></textarea><br>
+                <br>
+                <table border="1">
+                    <tr>
+                        <td>Source offset</td><td colspan="3"><input type="number" id="stage_process_source" min="1"></td>
+                    </tr>
+                    <tr>
+                        <td>Source type</td><td colspan="3"><select id="stage_process_source_type"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Process type</td><td colspan="3"><select id="stage_process_type"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Model</td><td colspan="3"><select id="stage_process_model"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Recommend</td><td colspan="3"><span id="stage_process_recom"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Sampler</td><td colspan="3"><select id="stage_process_sampler"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Scheduler</td><td colspan="3"><select id="stage_process_scheduler"><option>XXX</option></select></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Seed</td><td><input type="number" id="stage_process_seed_v" value="0"></td><td><input type="number" id="stage_process_seed_i" value="0"></td><td><select id="stage_process_seed_d"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>CFG x10</td><td><input type="number" id="stage_process_cfg_v" value="0"></td><td><input type="number" id="stage_process_cfg_i" value="0"></td><td><select id="stage_process_cfg_d"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Steps total</td><td><input type="number" id="stage_process_step_t_v" value="0"></td><td><input type="number" id="stage_process_step_t_i" value="0"></td><td><select id="stage_process_step_t_d"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Steps begin</td><td><input type="number" id="stage_process_step_b_v" value="0"></td><td><input type="number" id="stage_process_step_b_i" value="0"></td><td><select id="stage_process_step_b_d"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Steps end</td><td><input type="number" id="stage_process_step_e_v" value="0"></td><td><input type="number" id="stage_process_step_e_i" value="0"></td><td><select id="stage_process_step_e_d"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
+                        <td>Steps process</td><td colspan="3"><span id="stage_process_steps"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Denoise</td><td colspan="3"><span id="stage_process_denoise"></span></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="stage_type_2" style="display:none">
+            </div>
+
+        <hr size="10" noshade="yes">
+
+        <select size="10" id="filelist" style="width:100%">
+        </select>
+        <br>
+        <input type="button" value="Upload" onClick="fileUpload()">
+        <input type="button" value="Download" onClick="fileDownload()">
+        <input type="button" value="Remove" onClick="fileRemove()">
+        <input type="button" value="Rename" onClick="fileRename()">
+        <br>
+
+        <input type="button" value="Load project" onClick="projectLoad()">
+        <input type="button" value="Save project" onClick="projectSave()">
+        <input type="button" value="Set as source" onClick="projectSource()">
+        <br>
+        <br>
+
+        <script src="unistorage.js"></script>
+        <script src="storage.js"></script>
+        <script src="files.js"></script>
+        <script src="graph.js"></script>
+        <script src="gui.js"></script>
+        <script src="screen.js"></script>
+        <script src="webreq.js"></script>
+        <script src="project.js"></script>
+        <script>
+
+            fileListDisp();
+
+
+            function js_uuid()
+            {
+                return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+                    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+                );
+            }
+
+            let js_log_t = 0;
+
+            function js_log(x)
+            {
+                let t = performance.now();
+                console.log(Math.round(t) + "    " + Math.round(t - js_log_t) + "    " + x);
+                js_log_t = t;
+            }
+
+
+            function execSplit(x)
+            {
+                let i1 = x.indexOf("\n");
+                let i2 = x.indexOf("\n", i1 + 1);
+                let i3 = x.indexOf("\n", i2 + 1);
+                let xx = x.substring(0, i3).split('\n');
+                xx.push(x.substring(i3 + 1));
+                return xx;
+            }
+            
+            function comfyui_error(data)
+            {
+                if (data.startsWith("ERROR"))
+                {
+                    alert("Server error:\n\n" + data.substring(6));
+                    guiExecStop();
+                    return true;
+                }
+                return false;
+            }
+
+            function js_exec_comfyui1(apiPath, data)
+            {
+                const clientId = js_uuid();
+                const data_wrapped = "{\"prompt\":" + data + ",\"client_id\":\"" + clientId + "\"}";
+                webRequest(apiPath + "/prompt", "", data_wrapped, js_exec_comfyui2, apiPath + "|" + clientId);
+            }
+
+            function js_exec_comfyui2(data, info)
+            {
+                if (comfyui_error(data))
+                {
+                    return;
+                }
+                const answer = JSON.parse(data);
+                const historyInfo = info + "|" + answer.prompt_id
+                js_exec_comfyui4("{}", historyInfo);
+            }
+
+            function js_exec_comfyui3(data, info)
+            {
+                if (comfyui_error(data))
+                {
+                    return;
+                }
+                setTimeout(js_exec_comfyui4, 200, data, info);
+            }
+
+            function js_exec_comfyui4(data, info)
+            {
+                const dataObj = JSON.parse(data);
+                const infoX = info.split('|');
+                if (infoX[2] in dataObj)
+                {
+                    const dataItem = dataObj[infoX[2]];
+                    js_callback(JSON.stringify(dataItem));
+                }
+                else
+                {
+                    webRequest(infoX[0] + "/history/" + infoX[2], "", "", js_exec_comfyui3, info);
+                }
+            }
+
+
+
+            function js_exec(x)
+            {
+                let std = true;
+                if (x == "")
+                {
+                    setTimeout(() => js_callback(""), 1);
+                    return;
+                }
+
+                if (x.startsWith("ERROR"))
+                {
+                    alert(x.substring(5));
+                    return;
+                }
+
+
+                if (x.startsWith("EXEC"))
+                {
+                    const stepIdx = parseInt(x.substring(5));
+                    const stepType = parseInt(x.substring(4, 5));
+                    guiExec(stepIdx, stepType);
+                    setTimeout(() => js_callback(""), 1);
+                    return;
+                }
+                
+                
+                if (x.startsWith("WEB"))
+                {
+                    const xx = execSplit(x)
+                    webRequest(xx[1], xx[2], xx[3], js_callback_web);
+                    return;
+                }
+
+                if (x.startsWith("COMFYUI"))
+                {
+                    const xx = execSplit(x)
+                    js_exec_comfyui1(xx[1], xx[3]);
+                    return;
+                }
+
+                if (x.startsWith("PICTUREFILE"))
+                {
+                    const xx = execSplit(x)
+                    graphCurrentParams = xx[1].split(',');
+                    if (xx[2].length > 0)
+                    {
+                        fileLoad(xx[2], loadInputImage1);
+                    }
+                    else
+                    {
+                        setTimeout(() => js_callback(""), 1);
+                    }
+                    return;
+                }    
+
+
+                if (x.startsWith("PICTUREDATA"))
+                {
+                    const xx = execSplit(x);
+                    graphCurrentParams = xx[1].split(',');
+                    setTimeout(() => loadInputImage1("", graphPrefix(xx[2])), 1);
+                }
+            }
+
+            function loadInputImage1(name, contents)
+            {
+                graphPrepare(contents, loadInputImage2);
+            }
+
+            function loadInputImage2(contents)
+            {
+                const idx = contents.indexOf(",") + 1;
+                js_callback(contents.substr(idx));
+            }
+
+            function js_callback_web(data)
+            {
+                if (comfyui_error(data))
+                {
+                    return;
+                }
+                js_callback(data);
+            }
+
+            function js_callback(x)
+            {
+                window.asm_env.callback(x);
+            }
+
+
+            function js_alert(x)
+            {
+                alert(x);
+            }
+
+        </script>
+
+        <script type="module">
+            import init, { Environment } from "./AILatent.js";
+
+            init().then(() => {
+            window.asm_env = Environment.new();
+            projectConfig();
+            });
+        </script>
+
+    </body>
+</html>
+

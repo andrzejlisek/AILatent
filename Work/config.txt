@@ -1,0 +1,37 @@
+ServerComfyUI=http://127.0.0.1:8188
+Engine=3
+EngineList=1,2,3,4
+
+
+Engine1Name=SD 1.5 - base
+Engine1Type=0
+Engine1Model=v1-5-pruned-emaonly.safetensors
+Engine1Steps=20
+Engine1Cfg=70
+Engine1Sampler=DPM++ 2M
+Engine1Scheduler=Karras
+
+Engine2Name=SD 1.5 - inpaint
+Engine2Type=0
+Engine2Model=v1-5-inpainting.ckpt
+Engine2Steps=20
+Engine2Cfg=70
+Engine2Sampler=DPM++ 2M
+Engine2Scheduler=Karras
+
+Engine3Name=SDXL 1.0 base
+Engine3Type=0
+Engine3Model=sd_xl_base_1.0.safetensors
+Engine3Steps=20
+Engine3Cfg=70
+Engine3Sampler=DPM++ 2M
+Engine3Scheduler=Karras
+
+Engine4Name=SDXL 1.0 refiner
+Engine4Type=1
+Engine4Model=sd_xl_refiner_1.0.safetensors
+Engine4Steps=20
+Engine4Cfg=70
+Engine4Sampler=DPM++ 2M
+Engine4Scheduler=Karras
+
