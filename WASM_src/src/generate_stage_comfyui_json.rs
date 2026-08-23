@@ -30,7 +30,7 @@ impl GenerateStage
         json.replace(&format!("\"{}\"", tag), &format!("{}", value))
     }
 
-    pub fn json_tag_b(json:String, tag:String, value:bool) -> String
+    /*pub fn json_tag_b(json:String, tag:String, value:bool) -> String
     {
         if value
         {
@@ -40,7 +40,7 @@ impl GenerateStage
         {
             json.replace(&format!("\"{}\"", tag), "false")
         }
-    }
+    }*/
 
 
 
@@ -259,7 +259,7 @@ impl GenerateStage
             jsonx = GenerateStage::json_tag_(jsonx, "##Seed##".to_string(), format!("{}", tools::int_to_unsigned_long(current_stage.get_batch_seed(i))));
 
             jsonx = GenerateStage::json_tag(jsonx, "##AddNoise##".to_string(), if current_stage.undo_redo_curr.process_begin { "enable" } else { "disable" }.to_string());
-            jsonx = GenerateStage::json_tag(jsonx, "##ReturnWithNoise##".to_string(), if current_stage.undo_redo_curr.process_begin { "disable" } else { "enable" }.to_string());
+            jsonx = GenerateStage::json_tag(jsonx, "##ReturnWithNoise##".to_string(), if current_stage.undo_redo_curr.process_end { "disable" } else { "enable" }.to_string());
 
             if current_stage.get_batch_steps_total(i) > 0
             {
@@ -275,10 +275,10 @@ impl GenerateStage
             }
             jsonx = GenerateStage::json_tag_(jsonx, "##PromptCfg##".to_string(), tools::int_to_str(current_stage.get_batch_cfg(i), 1));
 
-            jsonx = GenerateStage::json_tag(jsonx, "##FileNameI##".to_string(), format!("{}{}.latent", current_stage.temp_file_name_work, i));
-            jsonx = GenerateStage::json_tag(jsonx, "##FileNameP##".to_string(), format!("{}{}x.latent", current_stage.temp_file_name_work, i));
-            jsonx = GenerateStage::json_tag(jsonx, "##FileNameM##".to_string(), format!("{}{}x.png", current_stage.temp_file_name_work, i));
-            jsonx = GenerateStage::json_tag(jsonx, "##FileNameO##".to_string(), format!("{}{}", current_stage.temp_file_name_work, i));
+            jsonx = GenerateStage::json_tag(jsonx, "##FileNameI##".to_string(), format!("{}{}.latent", current_stage.work_file_name_work, i));
+            jsonx = GenerateStage::json_tag(jsonx, "##FileNameP##".to_string(), format!("{}{}x.latent", current_stage.work_file_name_work, i));
+            jsonx = GenerateStage::json_tag(jsonx, "##FileNameM##".to_string(), format!("{}{}x.png", current_stage.work_file_name_work, i));
+            jsonx = GenerateStage::json_tag(jsonx, "##FileNameO##".to_string(), format!("{}{}", current_stage.work_file_name_work, i));
             sb.push_str(&jsonx);
         }
         sb.push_str(&json2);

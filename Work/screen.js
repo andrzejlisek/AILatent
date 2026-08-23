@@ -60,8 +60,17 @@ function screenNewWindow(isWin)
     screenCanvas = screenExtWindow.document.getElementById("screen");
     screenCtx = screenCanvas.getContext("2d");
 
-    screenCanvas.addEventListener('mousedown', handleInteraction);
-    screenCanvas.addEventListener('touchstart', handleInteraction, { passive: false });
+    screenCanvas.addEventListener('mousedown', handleInteraction1);
+    screenCanvas.addEventListener('mousemove', handleInteraction2);
+    screenCanvas.addEventListener('mouseup', handleInteraction3);
+    screenCanvas.addEventListener('mouseleave', handleInteraction3);
+
+    screenCanvas.addEventListener('touchstart', handleInteraction1, { passive: false });
+    screenCanvas.addEventListener('touchmove', handleInteraction2, { passive: false });
+    screenCanvas.addEventListener('touchend', handleInteraction3, { passive: false });
+    screenCanvas.addEventListener('touchcancel', handleInteraction3, { passive: false });
+
+
 
 //    screenObserver.observe(screenDiv);
     screenExtWindow.addEventListener("resize", screenPrepare);
@@ -75,8 +84,15 @@ function screenNewWindow(isWin)
         screenCanvas = document.getElementById("screen");
         screenCtx = screenCanvas.getContext("2d");
 
-        screenCanvas.addEventListener('mousedown', handleInteraction);
-        screenCanvas.addEventListener('touchstart', handleInteraction, { passive: false });
+        screenCanvas.addEventListener('mousedown', handleInteraction1);
+        screenCanvas.addEventListener('mousemove', handleInteraction2);
+        screenCanvas.addEventListener('mouseup', handleInteraction3);
+        screenCanvas.addEventListener('mouseleave', handleInteraction3);
+
+        screenCanvas.addEventListener('touchstart', handleInteraction1, { passive: false });
+        screenCanvas.addEventListener('touchmove', handleInteraction2, { passive: false });
+        screenCanvas.addEventListener('touchend', handleInteraction3, { passive: false });
+        screenCanvas.addEventListener('touchcancel', handleInteraction3, { passive: false });
 
         screenObserver.observe(screenDiv);
  
@@ -120,6 +136,14 @@ function screenRepaintAll()
 }
 
 
+function screenRepaintAllPics()
+{
+    for (let i = 0; i < (guiBatchW * guiBatchH); i++)
+    {
+        screenRepaint(i);
+    }
+}
+
 function screenRepaint(idx)
 {
     let idxX = (idx % guiBatchW) * screenPicW;
@@ -151,7 +175,8 @@ function screenRepaint(idx)
     
     if (screenPics[idx])
     {
-        graphPrepareImg(screenPics[idx], idxX, idxY, idxW, idxH, screenZoom, screenOffsetX, screenOffsetY, screenCanvas, screenCtx);
+        const imgParam = graphPrepareImg(screenPics[idx], 0, 0, 0, idxX, idxY, idxW, idxH, screenZoom, screenOffsetX, screenOffsetY, screenCanvas, screenCtx);
+        maskPaint(screenCtx, imgParam, idxX, idxY, idxW, idxH, 0);
     }
 }
 
@@ -250,11 +275,20 @@ function getCanvasCoordinates(event) {
     };
 }
 
+let handleInteractionBtn = false;
 
-function handleInteraction(event)
+function handleInteraction1(event)
 {
     event.preventDefault();
+    handleInteractionBtn = true;
+    
     const coords = getCanvasCoordinates(event);
+    if (maskState > 0)
+    {
+        maskMouse(coords.x, coords.y, 1);
+        return;
+    }
+
     const idxX = Math.floor(coords.x / screenPicW);
     const idxY = Math.floor(coords.y / screenPicH);
     
@@ -353,8 +387,44 @@ function handleInteraction(event)
     screenRepaintAll();
 }
 
-screenCanvas.addEventListener('mousedown', handleInteraction);
-screenCanvas.addEventListener('touchstart', handleInteraction, { passive: false });
+function handleInteraction2(event)
+{
+    event.preventDefault();
+    if (handleInteractionBtn)
+    {
+        const coords = getCanvasCoordinates(event);
+        if (maskState > 0)
+        {
+            maskMouse(coords.x, coords.y, 2);
+        }
+    }
+}
+
+function handleInteraction3(event)
+{
+    event.preventDefault();
+    if (handleInteractionBtn)
+    {
+        handleInteractionBtn = false;
+        const coords = getCanvasCoordinates(event);
+        if (maskState > 0)
+        {
+            maskMouse(coords.x, coords.y, 3);
+        }
+    }
+}
+
+screenCanvas.addEventListener('mousedown', handleInteraction1);
+screenCanvas.addEventListener('mousemove', handleInteraction2);
+screenCanvas.addEventListener('mouseup', handleInteraction3);
+screenCanvas.addEventListener('mouseleave', handleInteraction3);
+
+screenCanvas.addEventListener('touchstart', handleInteraction1, { passive: false });
+screenCanvas.addEventListener('touchmove', handleInteraction2, { passive: false });
+screenCanvas.addEventListener('touchend', handleInteraction3, { passive: false });
+screenCanvas.addEventListener('touchcancel', handleInteraction3, { passive: false });
+
+
 
 window.addEventListener('unload', function()
 {

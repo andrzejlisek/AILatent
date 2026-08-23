@@ -46,7 +46,6 @@ export class Environment {
         let deferred5_1;
         try {
             if (this.__wbg_ptr == 0) throw new Error('Attempt to use a moved value');
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
             _assertNum(this.__wbg_ptr);
             const ptr0 = passStringToWasm0(op, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
             const len0 = WASM_VECTOR_LEN;
@@ -57,14 +56,11 @@ export class Environment {
             const len2 = WASM_VECTOR_LEN;
             const ptr3 = passStringToWasm0(param3, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
             const len3 = WASM_VECTOR_LEN;
-            wasm.environment_data(retptr, this.__wbg_ptr, ptr0, len0, stage, ptr1, len1, ptr2, len2, ptr3, len3);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            deferred5_0 = r0;
-            deferred5_1 = r1;
-            return getStringFromWasm0(r0, r1);
+            const ret = wasm.environment_data(this.__wbg_ptr, ptr0, len0, stage, ptr1, len1, ptr2, len2, ptr3, len3);
+            deferred5_0 = ret[0];
+            deferred5_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
         } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
             wasm.__wbindgen_free(deferred5_0, deferred5_1, 1);
         }
     }
@@ -79,15 +75,17 @@ export class Environment {
      * @param {number} batch_w
      * @param {number} batch_h
      * @param {string} indices
+     * @param {number} exec_type
      */
-    startproc(batch_w, batch_h, indices) {
+    startproc(batch_w, batch_h, indices, exec_type) {
         if (this.__wbg_ptr == 0) throw new Error('Attempt to use a moved value');
         _assertNum(this.__wbg_ptr);
         _assertNum(batch_w);
         _assertNum(batch_h);
         const ptr0 = passStringToWasm0(indices, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.environment_startproc(this.__wbg_ptr, batch_w, batch_h, ptr0, len0);
+        _assertNum(exec_type);
+        wasm.environment_startproc(this.__wbg_ptr, batch_w, batch_h, ptr0, len0, exec_type);
     }
 }
 if (Symbol.dispose) Environment.prototype[Symbol.dispose] = Environment.prototype.free;
@@ -104,6 +102,9 @@ function __wbg_get_imports() {
         __wbg_js_exec_304a0c9cc7c3ea88: function() { return logError(function (arg0, arg1) {
             js_exec(getStringFromWasm0(arg0, arg1));
         }, arguments); },
+        __wbg_js_log_028b800cbffa05b3: function() { return logError(function (arg0, arg1) {
+            js_log(getStringFromWasm0(arg0, arg1));
+        }, arguments); },
         __wbg_js_uuid_c4645a83c8c94c17: function() { return logError(function (arg0) {
             const ret = js_uuid();
             const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -111,6 +112,15 @@ function __wbg_get_imports() {
             getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
             getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
         }, arguments); },
+        __wbindgen_init_externref_table: function() {
+            const table = wasm.__wbindgen_externrefs;
+            const offset = table.grow(4);
+            table.set(0, undefined);
+            table.set(offset + 0, undefined);
+            table.set(offset + 1, null);
+            table.set(offset + 2, true);
+            table.set(offset + 3, false);
+        },
     };
     return {
         __proto__: null,
@@ -244,6 +254,7 @@ function __wbg_finalize_init(instance, module) {
     wasmModule = module;
     cachedDataViewMemory0 = null;
     cachedUint8ArrayMemory0 = null;
+    wasm.__wbindgen_start();
     return wasm;
 }
 

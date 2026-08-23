@@ -110,7 +110,7 @@ impl ConfigFile
     }
 
 
-    pub fn print(&self) -> String
+    /*pub fn print(&self) -> String
     {
         let mut s = String::new();
         let cm = self.case_mode;
@@ -122,22 +122,22 @@ impl ConfigFile
             s.push_str("\n");
         }
         s
-    }
+    }*/
 
-    pub fn param_clear(&mut self)
+    /*pub fn param_clear(&mut self)
     {
         self.raw.clear();
         self.raw_file.clear();
-    }
+    }*/
 
-    pub fn param_remove(&mut self, name: String)
+    /*pub fn param_remove(&mut self, name: String)
     {
         let k = self.case(name);
         if let std::collections::hash_map::Entry::Occupied(entry) = self.raw.entry(k)
         {
             entry.remove();
         }
-    }
+    }*/
 
     pub fn param_set_s(&mut self, name: String, value: String)
     {
@@ -158,10 +158,10 @@ impl ConfigFile
         self.param_set_s(name, format!("{}", value));
     }
 
-    pub fn param_set_l(&mut self, name: String, value: i64)
+    /*pub fn param_set_l(&mut self, name: String, value: i64)
     {
         self.param_set_s(name, format!("{}", value));
-    }
+    }*/
 
     pub fn param_set_b(&mut self, name: String, value: bool)
     {
@@ -175,11 +175,11 @@ impl ConfigFile
         }
     }
 
-    pub fn param_get_s_x(&self, name: String, x: String) -> String
+    /*pub fn param_get_s_x(&self, name: String, x: String) -> String
     {
         let k = self.case(name);
         self.raw.get(&k).cloned().unwrap_or(x)
-    }
+    }*/
 
     pub fn param_get_s(&self, name: String) -> String
     {
@@ -187,12 +187,12 @@ impl ConfigFile
         self.raw.get(&k).cloned().unwrap_or("".to_string())
     }
 
-    pub fn param_get_i_x(&self, name: String, x: i32) -> i32
+    /*pub fn param_get_i_x(&self, name: String, x: i32) -> i32
     {
         let k = self.case(name);
         let v = self.raw.get(&k).cloned().unwrap_or("0".to_string());
         v.parse::<i32>().unwrap_or_else(|_| x)
-    }
+    }*/
 
     pub fn param_get_i(&self, name: String) -> i32
     {
@@ -201,21 +201,21 @@ impl ConfigFile
         v.parse::<i32>().unwrap_or_else(|_| 0)
     }
 
-    pub fn param_get_l_x(&self, name: String, x: i64) -> i64
+    /*pub fn param_get_l_x(&self, name: String, x: i64) -> i64
     {
         let k = self.case(name);
         let v = self.raw.get(&k).cloned().unwrap_or("0".to_string());
         v.parse::<i64>().unwrap_or_else(|_| x)
-    }
+    }*/
 
-    pub fn param_get_l(&self, name: String) -> i64
+    /*pub fn param_get_l(&self, name: String) -> i64
     {
         let k = self.case(name);
         let v = self.raw.get(&k).cloned().unwrap_or("0".to_string());
         v.parse::<i64>().unwrap_or_else(|_| 0)
-    }
+    }*/
 
-    pub fn param_get_b_x(&self, name: String, x: bool) -> bool
+    /*pub fn param_get_b_x(&self, name: String, x: bool) -> bool
     {
         let k = self.case(name);
         let v = self.raw.get(&k).cloned().unwrap_or("X".to_string());
@@ -225,7 +225,7 @@ impl ConfigFile
             "0" | "FALSE" | "NO" | "F" | "N" => false,
             _ => x,
         }
-    }
+    }*/
 
     pub fn param_get_b(&self, name: String) -> bool
     {

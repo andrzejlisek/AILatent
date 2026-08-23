@@ -8,7 +8,7 @@ export class Environment {
     callback(param: string): void;
     data(op: string, stage: number, param1: string, param2: string, param3: string): string;
     static new(): Environment;
-    startproc(batch_w: number, batch_h: number, indices: string): void;
+    startproc(batch_w: number, batch_h: number, indices: string, exec_type: number): void;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -16,14 +16,15 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly __wbg_environment_free: (a: number, b: number) => void;
-    readonly environment_new: () => number;
-    readonly environment_data: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number) => void;
-    readonly environment_startproc: (a: number, b: number, c: number, d: number, e: number) => void;
     readonly environment_callback: (a: number, b: number, c: number) => void;
+    readonly environment_data: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => [number, number];
+    readonly environment_new: () => number;
+    readonly environment_startproc: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
-    readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
+    readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_free: (a: number, b: number, c: number) => void;
+    readonly __wbindgen_start: () => void;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;

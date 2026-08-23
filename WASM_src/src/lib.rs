@@ -6,8 +6,11 @@ mod config_file;
 mod tools;
 mod generate_engine;
 mod generate_stage;
+mod generate_stage_graph;
+mod generate_stage_bypass;
 mod generate_stage_comfyui;
 mod generate_stage_comfyui_json;
+mod generate_stage_a1111;
 
 use crate::core::Core;
 
@@ -36,9 +39,9 @@ impl Environment
     }
 
 
-    pub fn startproc(&mut self, batch_w: i32, batch_h: i32, indices: String)
+    pub fn startproc(&mut self, batch_w: i32, batch_h: i32, indices: String, exec_type: i32)
     {
-        self.core.start(batch_w, batch_h, indices);
+        self.core.start(batch_w, batch_h, indices, exec_type);
     }
 
     pub fn callback(&mut self, param: String)

@@ -5,13 +5,15 @@ use crate::generate_stage::*;
 
 pub struct Core
 {
-    pub cursor_state: i32,
     pub cf: config_file::ConfigFile,
     pub names_sampler: Vec<String>,
     pub names_scheduler: Vec<String>,
     pub engine_list: Vec<GenerateEngine>,
+    pub engine_default: String,
     pub stage_list: Vec<GenerateStage>,
     pub stage_execute: usize,
+
+    pub server_list: Vec<String>
 }
 
 
@@ -21,51 +23,51 @@ impl Core
     {
         let mut self_ = Core
         {
-            cursor_state: 0,
             cf: config_file::ConfigFile::new(),
             names_sampler: vec![],
             names_scheduler: vec![],
             engine_list: vec![],
+            engine_default: String::new(),
             stage_list: vec![],
             stage_execute: 0,
+            server_list: vec![],
         };
 
-        self_.names_sampler.push("Euler".to_string());
-        self_.names_sampler.push("DPM++ 2M".to_string());
-        self_.names_sampler.push("LCM".to_string());
-        self_.names_sampler.push("Euler A".to_string());
-        self_.names_sampler.push("DPM++ 2M SDE".to_string());
-        self_.names_sampler.push("DPM++ SDE".to_string());
-        self_.names_scheduler.push("Karras".to_string());
-        self_.names_scheduler.push("Simple".to_string());
-        self_.names_scheduler.push("SGM Uniform".to_string());
-        self_.names_scheduler.push("Normal".to_string());
-        self_.names_scheduler.push("Exponential".to_string());
+        for i in 0..GenerateStageUndoRedo::sampler_scheduler(10, 0).len()
+        {
+            self_.names_sampler.push(GenerateStageUndoRedo::sampler_scheduler(10, i + 1));
+        }
+        for i in 0..GenerateStageUndoRedo::sampler_scheduler(20, 0).len()
+        {
+            self_.names_scheduler.push(GenerateStageUndoRedo::sampler_scheduler(20, i + 1));
+        }
         self_
     }
 
-    pub fn info(&mut self) -> String
-    {
-        self.cursor_state = self.cursor_state + 1;
-        format!("{}", self.cursor_state)
-    }
-
-    pub fn find_engine(&self, name: String) -> &GenerateEngine
+    pub fn find_engine_name(&self, name: String) -> String
     {
         for i in 0..self.engine_list.len()
         {
-            return &self.engine_list[i];
+            if self.engine_list[i].name == name
+            {
+                return self.engine_list[i].name.to_string();
+            }
         }
 
-        panic!("Unknown engine {}", name);
+        self.engine_default.to_string()
     }
 
     pub fn engine_info(&mut self, i: usize, info_type: i32) -> String
     {
         if info_type == 1
         {
+            let mut ii0 = 99999;
             for ii in 0..self.engine_list.len()
             {
+                if self.engine_default == self.engine_list[ii].name
+                {
+                    ii0 = ii;
+                }
                 if self.engine_list[ii].name == self.stage_list[i].undo_redo_curr.engine_name
                 {
                     let mut s = String::new();
@@ -79,26 +81,26 @@ impl Core
                     return s;
                 }
             }
+
+            if ii0 < 99999
+            {
+                let mut s = String::new();
+                s.push_str(&self.engine_list[ii0].sampler);
+                s.push_str(" / ");
+                s.push_str(&self.engine_list[ii0].scheduler);
+                s.push_str(" / ");
+                s.push_str(&format!("{}", self.engine_list[ii0].cfg));
+                s.push_str(" / ");
+                s.push_str(&format!("{}", self.engine_list[ii0].steps));
+                return s;
+            }
         }
 
         if info_type == 2
         {
-            let step_1 = self.stage_list[i].undo_redo_curr.steps_begin_value;
-            let step_2 = self.stage_list[i].undo_redo_curr.steps_total_value;
-            let mut s = String::new();
-            if step_2 > 0
-            {
-                let step_3 = (1000 - (step_1 * 1000 / step_2)).min(1000);
-                //s.push_str(&format!("1-({}/{}) = {}", step_1, step_2, tools::int_to_str(step_3, -3)));
-                s.push_str(&tools::int_to_str(step_3, -3));
-            }
-            else
-            {
-                let step_3 = 1000;
-                //s.push_str(&format!("1-({}/{}) = {}", step_1, step_2, tools::int_to_str(step_3, -3)));
-                s.push_str(&tools::int_to_str(step_3, -3));
-            }
-            return s;
+            let step_1 = self.stage_list[i].undo_redo_curr.steps_begin_value + self.stage_list[i].undo_redo_curr.steps_offset_value;
+            let step_2 = self.stage_list[i].undo_redo_curr.steps_total_value + self.stage_list[i].undo_redo_curr.steps_offset_value;
+            return GenerateStage::steps_denoise(step_1, step_2, 3);
         }
 
         if info_type == 3
@@ -209,7 +211,19 @@ impl Core
         }
     }
 
-    pub fn start(&mut self, batch_w: i32, batch_h: i32, indices: String)
+    fn stage_prepate_engine(&mut self, i: usize)
+    {
+        let engine_name_set = self.find_engine_name(self.stage_list[i].undo_redo_curr.engine_name.to_string());
+        for ii in 0..self.engine_list.len()
+        {
+            if self.engine_list[ii].name == engine_name_set
+            {
+                self.stage_list[i].engine = GenerateEngine::new_clone(&self.engine_list[ii]);
+            }
+        }
+    }
+
+    pub fn start(&mut self, batch_w: i32, batch_h: i32, indices: String, exec_type: i32)
     {
         let indices_array_i = tools::text_to_nums_i(&indices);
         let mut indices_array_w: Vec<usize> = Vec::new();
@@ -274,20 +288,14 @@ impl Core
         // prepare batch
         for i in 0..self.stage_list.len()
         {
-            for ii in 0..self.engine_list.len()
+            self.stage_prepate_engine(i);
+            if indices_array_o.contains(&i)
             {
-                if self.engine_list[ii].name == self.stage_list[i].undo_redo_curr.engine_name
-                {
-                    self.stage_list[i].engine = GenerateEngine::new_clone(&self.engine_list[ii]);
-                }
-                if indices_array_o.contains(&i)
-                {
-                    self.stage_list[i].prepare(batch_w, batch_h, i);
-                }
-                else
-                {
-                    self.stage_list[i].prepare_clear(batch_w, batch_h, i);
-                }
+                self.stage_list[i].prepare(batch_w, batch_h, i, exec_type);
+            }
+            else
+            {
+                self.stage_list[i].prepare_clear(batch_w, batch_h, i, exec_type);
             }
         }
 
@@ -356,8 +364,27 @@ impl Core
         String::new()
     }
 
+    fn server_list_create(&mut self)
+    {
+        self.server_list.clear();
+        self.server_list.push("dummy".to_string());
+        self.server_list.push("x".to_string());
+        let mut i = 1;
+        let mut server_type = self.cf.param_get_s("Server1Type".to_string());
+        while server_type.len() > 0
+        {
+            self.server_list.push(server_type.to_string());
+            self.server_list.push(self.cf.param_get_s(format!("Server{}Addr", i).to_string()));
+            i = i + 1;
+
+            server_type = self.cf.param_get_s(format!("Server{}Type", i).to_string());
+        }
+    }
+
     pub fn project_load(&mut self, txt: String)
     {
+        self.server_list_create();
+
         let mut cf_x = ConfigFile::new();
         let txt_lines = tools::text_to_lines(&txt);
         cf_x.file_load_start();
@@ -370,7 +397,7 @@ impl Core
         self.stage_list.clear();
         while cf_x.param_exists(format!("Stage{}CfgV", idx))
         {
-            let mut stage_temp = GenerateStage::new(self.cf.param_get_s("ServerComfyUI".to_string()));
+            let mut stage_temp = GenerateStage::new();
             stage_temp.text_load(&cf_x, idx);
             self.stage_list.push(stage_temp);
             idx = idx + 1;
@@ -397,7 +424,7 @@ impl Core
         sss
     }
 
-    pub fn data(&mut self, op: String, stage: i32, param1: String, param2: String, _param3: String) -> String
+    pub fn data(&mut self, op: String, stage: i32, param1: String, param2: String, param3: String) -> String
     {
         match op.as_str()
         {
@@ -411,7 +438,12 @@ impl Core
                 }
 
                 let engine_list_x = tools::text_to_nums_i(&self.cf.param_get_s("EngineList".to_string()));
+                let engine_default_x = self.cf.param_get_s("EngineDefault".to_string()).parse::<i32>().unwrap_or_else(|_| -1);
 
+                self.engine_default = String::new();
+                self.engine_list.clear();
+
+                self.server_list_create();
                 for i in 0..engine_list_x.len()
                 {
                     let ii = engine_list_x[i];
@@ -420,11 +452,14 @@ impl Core
                         let t = self.cf.param_get_s(format!("Engine{}Name", ii));
                         if t.len() > 0
                         {
-                            self.engine_list.push(GenerateEngine::new(&self.cf, ii));
+                            self.engine_list.push(GenerateEngine::new(&self.cf, ii, &self.server_list));
+                            if engine_default_x == ii
+                            {
+                                self.engine_default = self.engine_list[self.engine_list.len() - 1].name.to_string();
+                            }
                         }
                     }
                 }
-
 
                 let mut engines = String::new();
                 for i in 0..self.engine_list.len()
@@ -436,10 +471,38 @@ impl Core
                     engines.push_str(&self.engine_list[i].name);
                 }
 
-                self.stage_list.push(generate_stage::GenerateStage::new(self.cf.param_get_s("ServerComfyUI".to_string())));
+                self.server_list_create();
+
+                self.stage_list.push(generate_stage::GenerateStage::new());
 
                 engines
             },
+            "config2" => {
+                self.engine_default.to_string()
+            },
+            "gui" => {
+                match stage {
+                    1 => {
+                        let mut temp = String::new();
+                            for i in 0..GenerateStageUndoRedo::sampler_scheduler(10, 0).len()
+                            {
+                                temp.push_str("|");
+                                temp.push_str(&GenerateStageUndoRedo::sampler_scheduler(10, i + 1));
+                            }
+                        temp
+                    },
+                    2 => {
+                        let mut temp = String::new();
+                            for i in 0..GenerateStageUndoRedo::sampler_scheduler(20, 0).len()
+                            {
+                                temp.push_str("|");
+                                temp.push_str(&GenerateStageUndoRedo::sampler_scheduler(20, i + 1));
+                            }
+                        temp
+                    },
+                    _ => "dummy".to_string(),
+                }
+            }
             "get_picture" => {
                 self.get_picture(stage as usize, param1.parse().unwrap(), param2.parse().unwrap())
             },
@@ -457,6 +520,7 @@ impl Core
                 }
                 else
                 {
+                    self.stage_prepate_engine(stage as usize);
                     self.stage_list[stage as usize].info_data()
                 }
             },
@@ -467,10 +531,11 @@ impl Core
                 }
                 else
                 {
-                    self.stage_list[stage as usize].info(stage)
+                    self.stage_list[stage as usize].info(stage, &self.engine_default)
                 }
             },
             "project_value_get" => {
+                let param2_num = param2.parse::<i32>().unwrap_or_else(|_| 0);
                 let stage_us = stage as usize;
                 match param1.as_str()
                 {
@@ -492,6 +557,9 @@ impl Core
                     "input_zoom" => self.stage_list[stage_us].undo_redo_curr.image_input_zoom.to_string(),
                     "input_offsetx" => self.stage_list[stage_us].undo_redo_curr.image_input_offsetx.to_string(),
                     "input_offsety" => self.stage_list[stage_us].undo_redo_curr.image_input_offsety.to_string(),
+                    "input_color_r" => self.stage_list[stage_us].undo_redo_curr.image_input_color_r.to_string(),
+                    "input_color_g" => self.stage_list[stage_us].undo_redo_curr.image_input_color_g.to_string(),
+                    "input_color_b" => self.stage_list[stage_us].undo_redo_curr.image_input_color_b.to_string(),
 
                     "process_source" => self.stage_list[stage_us].undo_redo_curr.process_source.to_string(),
                     "process_source_type" => match self.stage_list[stage_us].undo_redo_curr.process_source_type
@@ -515,7 +583,7 @@ impl Core
                             _ => "0"
                         }.to_string()
                     },
-                    "process_model" => self.stage_list[stage_us].undo_redo_curr.engine_name.to_string(),
+                    "process_model" => self.find_engine_name(self.stage_list[stage_us].undo_redo_curr.engine_name.to_string()),
                     "process_recom" => self.engine_info(stage_us, 1),
                     "process_steps" => self.engine_info(stage_us, 3),
                     "process_denoise" => self.engine_info(stage_us, 2),
@@ -536,9 +604,22 @@ impl Core
                     "process_step_e_v" => self.stage_list[stage_us].undo_redo_curr.steps_end_value.to_string(),
                     "process_step_e_i" => self.stage_list[stage_us].undo_redo_curr.steps_end_increment.to_string(),
                     "process_step_e_d" => self.stage_list[stage_us].undo_redo_curr.steps_end_direction.to_string(),
+                    "process_step_o_v" => self.stage_list[stage_us].undo_redo_curr.steps_offset_value.to_string(),
+                    "process_step_o_i" => self.stage_list[stage_us].undo_redo_curr.steps_offset_increment.to_string(),
+                    "process_step_o_d" => self.stage_list[stage_us].undo_redo_curr.steps_offset_direction.to_string(),
 
                     "process_prompt_posi" => self.stage_list[stage_us].undo_redo_curr.prompt_posi.to_string(),
                     "process_prompt_nega" => self.stage_list[stage_us].undo_redo_curr.prompt_nega.to_string(),
+
+                    "mask_figure" => self.stage_list[stage_us].mask_figure[param2_num as usize].to_string(),
+                    "mask_param" => self.stage_list[stage_us].mask_param[param2_num as usize].to_string(),
+                    "mask_color_r" => self.stage_list[stage_us].mask_color_r.to_string(),
+                    "mask_color_g" => self.stage_list[stage_us].mask_color_g.to_string(),
+                    "mask_color_b" => self.stage_list[stage_us].mask_color_b.to_string(),
+                    "mask_preview_1" => self.stage_list[stage_us].mask_preview_1.to_string(),
+                    "mask_preview_2" => self.stage_list[stage_us].mask_preview_2.to_string(),
+
+
                     _ => String::new()
                 }
             },
@@ -564,6 +645,9 @@ impl Core
                     "input_zoom" => self.stage_list[stage_us].undo_redo_curr.image_input_zoom = param2_num,
                     "input_offsetx" => self.stage_list[stage_us].undo_redo_curr.image_input_offsetx = param2_num,
                     "input_offsety" => self.stage_list[stage_us].undo_redo_curr.image_input_offsety = param2_num,
+                    "input_color_r" => self.stage_list[stage_us].undo_redo_curr.image_input_color_r = param2_num,
+                    "input_color_g" => self.stage_list[stage_us].undo_redo_curr.image_input_color_g = param2_num,
+                    "input_color_b" => self.stage_list[stage_us].undo_redo_curr.image_input_color_b = param2_num,
 
                     "process_source" => self.stage_list[stage_us].undo_redo_curr.process_source = param2_num,
                     "process_source_type" => self.stage_list[stage_us].undo_redo_curr.process_source_type = match param2.as_str() {
@@ -592,9 +676,21 @@ impl Core
                     "process_step_e_v" => self.stage_list[stage_us].undo_redo_curr.steps_end_value = param2_num,
                     "process_step_e_i" => self.stage_list[stage_us].undo_redo_curr.steps_end_increment = param2_num,
                     "process_step_e_d" => self.stage_list[stage_us].undo_redo_curr.steps_end_direction = param2_num,
+                    "process_step_o_v" => self.stage_list[stage_us].undo_redo_curr.steps_offset_value = param2_num,
+                    "process_step_o_i" => self.stage_list[stage_us].undo_redo_curr.steps_offset_increment = param2_num,
+                    "process_step_o_d" => self.stage_list[stage_us].undo_redo_curr.steps_offset_direction = param2_num,
 
                     "process_prompt_posi" => self.stage_list[stage_us].undo_redo_curr.prompt_posi = param2,
                     "process_prompt_nega" => self.stage_list[stage_us].undo_redo_curr.prompt_nega = param2,
+
+                    "mask_figure" => self.stage_list[stage_us].mask_figure[param2_num as usize] = param3,
+                    "mask_param" => self.stage_list[stage_us].mask_param[param2_num as usize] = param3,
+                    "mask_color_r" => self.stage_list[stage_us].mask_color_r = param2_num,
+                    "mask_color_g" => self.stage_list[stage_us].mask_color_g = param2_num,
+                    "mask_color_b" => self.stage_list[stage_us].mask_color_b = param2_num,
+                    "mask_preview_1" => self.stage_list[stage_us].mask_preview_1 = param2_num,
+                    "mask_preview_2" => self.stage_list[stage_us].mask_preview_2 = param2_num,
+
                     _ => {}
                 }
                 String::new()

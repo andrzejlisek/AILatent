@@ -13,6 +13,10 @@ pub struct GenerateEngine
     pub sampler: String,
     pub scheduler: String,
     pub img_type: i32,
+
+    pub server_type: String,
+    pub server_addr: String,
+    pub server_id: i32,
 }
 
 impl GenerateEngine
@@ -21,6 +25,9 @@ impl GenerateEngine
     {
         let self_ = GenerateEngine
         {
+            server_type: String::new(),
+            server_addr: String::new(),
+            server_id: 0,
             name: String::new(),
             model: String::new(),
             model_text: String::new(),
@@ -40,6 +47,9 @@ impl GenerateEngine
     {
         let self_ = GenerateEngine
         {
+            server_type: eng.server_type.to_string(),
+            server_addr: eng.server_addr.to_string(),
+            server_id: eng.server_id,
             name: eng.name.to_string(),
             model: eng.model.to_string(),
             model_text: eng.model_text.to_string(),
@@ -55,7 +65,7 @@ impl GenerateEngine
         self_
     }
 
-    pub fn new(cf: &ConfigFile, idx: i32) -> GenerateEngine
+    pub fn new(cf: &ConfigFile, idx: i32, server_list: &Vec<String>) -> GenerateEngine
     {
         let mut self_ = GenerateEngine
         {
@@ -69,8 +79,14 @@ impl GenerateEngine
             sampler: cf.param_get_s(format!("Engine{}Sampler", idx)),
             scheduler: cf.param_get_s(format!("Engine{}Scheduler", idx)),
             img_type: cf.param_get_i(format!("Engine{}Type", idx)),
+
+            server_id: cf.param_get_i(format!("Engine{}Server", idx)),
+            server_type: String::new(),
+            server_addr: String::new(),
             model_ckpt: true,
         };
+        self_.server_type = server_list[(self_.server_id as usize) * 2 + 0].to_string();
+        self_.server_addr = server_list[(self_.server_id as usize) * 2 + 1].to_string();
         if (self_.model_text.len() > 0) || (self_.model_diffusion.len() > 0) || (self_.model_vae.len() > 0)
         {
             self_.model_ckpt = false;

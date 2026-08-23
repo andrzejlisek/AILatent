@@ -9,8 +9,11 @@ mod config_file;
 mod tools;
 mod generate_engine;
 mod generate_stage;
+mod generate_stage_graph;
+mod generate_stage_bypass;
 mod generate_stage_comfyui;
 mod generate_stage_comfyui_json;
+mod generate_stage_a1111;
 
 static mut GLOBAL_CORE: *mut Core = std::ptr::null_mut();
 
@@ -169,8 +172,28 @@ fn test_json_tag()
 }
 
 
+pub fn steps_denoise(step_begin: i32, step_total: i32, digits: u32) -> String
+{
+    let factor: i32 = 10_i32.pow(digits);
+    let denoise = if step_total > 0
+    {
+        (factor - (step_begin * factor / step_total)).min(factor)
+    }
+    else
+    {
+        factor
+    };
+    tools::int_to_str(denoise, 0 - (digits as i32))
+}
 
 fn main() {
+
+    let v = steps_denoise(15, 20, 2);
+
+    print!("{}", v);
+
+    return;
+
 
     let t = -3;
     println!("{}", tools::int_to_str(1, t));
@@ -224,7 +247,7 @@ fn main() {
     unsafe {
         GLOBAL_CORE = &mut c as *mut Core;
     }
-    c.start(3, 2, String::from("XX"));
+    c.start(3, 2, String::from("XX"), 0);
 
 
     loop {

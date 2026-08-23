@@ -12,16 +12,22 @@ function graphPrepare(raw, answer)
     let prepareZoom = parseInt(graphCurrentParams[2]);
     let prepareX = parseInt(graphCurrentParams[3]);
     let prepareY = parseInt(graphCurrentParams[4]);
+    let prepareR = parseInt(graphCurrentParams[5]);
+    let prepareG = parseInt(graphCurrentParams[6]);
+    let prepareB = parseInt(graphCurrentParams[7]);
     
     const img = new Image();
     img.onload = function() {
+
+        if (prepareW <= 0) { prepareW = img.naturalWidth; }
+        if (prepareH <= 0) { prepareH = img.naturalHeight; }
 
         const tempCnv = document.createElement("canvas");
         tempCnv.width = prepareW;
         tempCnv.height = prepareH;
         const tempCtx = tempCnv.getContext("2d");
 
-        graphPrepareImg(img, 0, 0, prepareW, prepareH, prepareZoom, prepareX, prepareY, tempCnv, tempCtx);
+        graphPrepareImg(img, prepareR, prepareG, prepareB, 0, 0, prepareW, prepareH, prepareZoom, prepareX, prepareY, tempCnv, tempCtx);
 
 
         const result = tempCnv.toDataURL("image/png");
@@ -33,9 +39,10 @@ function graphPrepare(raw, answer)
     img.src = raw;
 }
 
-function graphPrepareImg(img, idxX, idxY, idxW, idxH, xZoom, xOffsetX, xOffsetY, tempCnv, tempCtx)
+function graphPrepareImg(img, marginR, marginG, marginB, idxX, idxY, idxW, idxH, xZoom, xOffsetX, xOffsetY, tempCnv, tempCtx)
 {
-    tempCtx.fillStyle = "black";
+    tempCtx.fillStyle = "rgb(" + marginR + "," + marginG + "," + marginB + ")";
+    //tempCtx.fillStyle = "black";
     tempCtx.fillRect(idxX, idxY, idxW, idxH);
 
     //screenCtx.fillStyle = "green";
@@ -87,33 +94,36 @@ function graphPrepareImg(img, idxX, idxY, idxW, idxH, xZoom, xOffsetX, xOffsetY,
     let srcY = 0;
     let srcW = imgW;
     let srcH = imgH;
-    let dstX = (idxW - paintW) / 2 + imgOffsetX;
-    let dstY = (idxH - paintH) / 2 + imgOffsetY;
-    let dstW = paintW;
-    let dstH = paintH;
+    let dstX = Math.round((idxW - paintW) / 2 + imgOffsetX);
+    let dstY = Math.round((idxH - paintH) / 2 + imgOffsetY);
+    let dstW = Math.round(paintW);
+    let dstH = Math.round(paintH);
+
+    let imgBounds = [imgW, imgH, dstX, dstY, dstW, dstH];
     
     if (dstX < 0)
     {
-        srcX = (0 - dstX) * srcW / dstW;
+        srcX = Math.round((0 - dstX) * srcW / dstW);
         dstX = 0;
     }
     if (dstY < 0)
     {
-        srcY = (0 - dstY) * srcH / dstH;
+        srcY = Math.round((0 - dstY) * srcH / dstH);
         dstY = 0;
     }
     if (dstW > (idxW - dstX))
     {
-        srcW = srcW - (dstW + dstX - idxW) * srcW / dstW;
+        srcW = Math.round(srcW - (dstW + dstX - idxW) * srcW / dstW);
         dstW = idxW - dstX;
     }
     if (dstH > (idxH - dstY))
     {
-        srcH = srcH - (dstH + dstY - idxH) * srcH / dstH;
+        srcH = Math.round(srcH - (dstH + dstY - idxH) * srcH / dstH);
         dstH = idxH - dstY;
     }
 
     tempCtx.drawImage(img, srcX, srcY, srcW, srcH, idxX + dstX, idxY + dstY, dstW, dstH);
+    return imgBounds;
 }
 
 
@@ -168,7 +178,7 @@ function graphDownloadCollage()
     {
         for (let x = 0; x < guiBatchW; x++)
         {
-            graphPrepareImg(screenPics[idx], x * imgW, y * imgH, imgW, imgH, 100, 0, 0, tempCnv, tempCtx);
+            graphPrepareImg(screenPics[idx], 0, 0, 0, x * imgW, y * imgH, imgW, imgH, 100, 0, 0, tempCnv, tempCtx);
             idx++;
         }
     }
@@ -195,7 +205,7 @@ function graphDownloadImages()
                 tempCnv.height = imgH;
                 const tempCtx = tempCnv.getContext("2d");
 
-                graphPrepareImg(img, 0, 0, imgW, imgH, 0, 0, 0, tempCnv, tempCtx);
+                graphPrepareImg(img, 0, 0, 0, 0, 0, imgW, imgH, 0, 0, 0, tempCnv, tempCtx);
                 let raw = tempCnv.toDataURL("image/png");
                 
                 graphDownloadFile("ailatent_" + timestamp() + "_" + numPad(i + 1, screenPics.length) + ".png", raw);
@@ -228,6 +238,24 @@ function graphDownloadFileFinish(blob)
     setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);    
 }
 
+function graphCanvasPreview(cnv)
+{
+    const newTab = window.open("", "_blank");
+    cnv.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        newTab.location.href = url;
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }, "image/png");
 
-//function graphPrepareImg(img, idxX, idxY, idxW, idxH, xZoom, xOffsetX, xOffsetY, tempCnv, tempCtx)
+}
 
+function graphCanvasToFile(cnv)
+{
+    let temp = cnv.toDataURL("image/png");
+    let idx = temp.indexOf(',');
+    if (idx > 0)
+    {
+        return temp.substr(idx + 1);
+    }
+    return temp;
+}

@@ -63,10 +63,30 @@ function guiNumber(e)
         this.dispatchEvent(new Event('input'));
 }
 
+function guiInputValueColor(t, id_rgb, id_r, id_g, id_b)
+{
+    switch (t)
+    {
+        case 0:
+            const v = document.getElementById(id_rgb).value;
+            document.getElementById(id_r).value = parseInt(v.slice(1, 3), 16);
+            document.getElementById(id_g).value = parseInt(v.slice(3, 5), 16);
+            document.getElementById(id_b).value = parseInt(v.slice(5, 7), 16);
+            break;
+        case 1:
+        case 2:
+        case 3:
+            const r = parseInt(document.getElementById(id_r).value).toString(16).padStart(2, '0');
+            const g = parseInt(document.getElementById(id_g).value).toString(16).padStart(2, '0');
+            const b = parseInt(document.getElementById(id_b).value).toString(16).padStart(2, '0');
+            document.getElementById(id_rgb).value = "#" + r + g + b + "";
+            break;
+    }
+}
+
 function guiInputValue(e)
 {
     const id = e.target.id;
-    //console.log(e.target.id + " = " + e.target.value);
     
     let isStageChange = 0;
     
@@ -74,16 +94,22 @@ function guiInputValue(e)
     if ((id == "stage_input_file") || (id == "stage_input_width") || (id == "stage_input_height")) { isStageChange = 1; }
     if ((id == "stage_input_zoom") || (id == "stage_input_offsetx") || (id == "stage_input_offsety")) { isStageChange = 1; }
 
+    if (id == "stage_input_color")   { guiInputValueColor(0, "stage_input_color", "stage_input_color_r", "stage_input_color_g", "stage_input_color_b"); isStageChange = 4; }
+    if (id == "stage_input_color_r") { guiInputValueColor(1, "stage_input_color", "stage_input_color_r", "stage_input_color_g", "stage_input_color_b"); isStageChange = 1; }
+    if (id == "stage_input_color_g") { guiInputValueColor(2, "stage_input_color", "stage_input_color_r", "stage_input_color_g", "stage_input_color_b"); isStageChange = 1; }
+    if (id == "stage_input_color_b") { guiInputValueColor(3, "stage_input_color", "stage_input_color_r", "stage_input_color_g", "stage_input_color_b"); isStageChange = 1; }
+
     if ((id == "stage_process_model") || (id == "stage_process_sampler") || (id == "stage_process_scheduler")) { isStageChange = 2; }
     if ((id == "stage_process_seed_v") || (id == "stage_process_seed_i")) { isStageChange = 1; }
     if ((id == "stage_process_cfg_v") || (id == "stage_process_cfg_i")) { isStageChange = 1; }
     if ((id == "stage_process_step_t_v") || (id == "stage_process_step_t_i")) { isStageChange = 1; }
     if ((id == "stage_process_step_b_v") || (id == "stage_process_step_b_i")) { isStageChange = 1; }
     if ((id == "stage_process_step_e_v") || (id == "stage_process_step_e_i")) { isStageChange = 1; }
+    if ((id == "stage_process_step_o_v") || (id == "stage_process_step_o_i")) { isStageChange = 1; }
 
     if ((id == "stage_stage_type") || (id == "stage_process_source_type")) { isStageChange = 3; }
     if ((id == "stage_process_type") || (id == "stage_process_seed_d") || (id == "stage_process_cfg_d")) { isStageChange = 3; }
-    if ((id == "stage_process_step_t_d") || (id == "stage_process_step_b_d") || (id == "stage_process_step_e_d")) { isStageChange = 3; }
+    if ((id == "stage_process_step_t_d") || (id == "stage_process_step_b_d") || (id == "stage_process_step_e_d") || (id == "stage_process_step_o_d")) { isStageChange = 3; }
 
 
     if ((id == "stage_process_prompt_posi") || (id == "stage_process_prompt_nega")) { isStageChange = 1; }
@@ -97,6 +123,11 @@ function guiInputValue(e)
     if (id == "stages")
     {
         projectStageShow();
+    }
+    
+    if ((id.startsWith("mask_")) || (id.startsWith("stage_mask_")))
+    {
+        maskCtrlEvent(id);
     }
 }
 
@@ -247,51 +278,13 @@ function guiControlPrepareOpt(id, opts)
     document.getElementById(id).addEventListener('input', guiInputValue, { passive: false });
 }
 
+function guiControlPrepareCol(id)
+{
+    document.getElementById(id).style.width = "100%";
+    document.getElementById(id).style["min-width"] = "50px";
+    document.getElementById(id).addEventListener('input', guiInputValue, { passive: false });
+}
 
-guiControlPrepareNum("projectBatchW");
-guiControlPrepareNum("projectBatchH");
-
-guiControlPrepareTxt("stage_input_file");
-guiControlPrepareNum("stage_input_width", ["xxx"]);
-guiControlPrepareNum("stage_input_height", ["xxx"]);
-guiControlPrepareNum("stage_input_row");
-guiControlPrepareNum("stage_input_col");
-guiControlPrepareNum("stage_input_zoom");
-guiControlPrepareNum("stage_input_offsetx");
-guiControlPrepareNum("stage_input_offsety");
-
-guiControlPrepareNum("stage_process_source");
-guiControlPrepareOpt("stage_process_source_type", ["Bitmap","Latent"]);
-guiControlPrepareOpt("stage_process_type", ["Full","Begin","Middle","End"]);
-guiControlPrepareOpt("stage_process_model", ["xxx"]);
-guiControlPrepareOpt("stage_process_sampler", ["Euler", "DPM++ 2M", "LCM"]);
-guiControlPrepareOpt("stage_process_scheduler", ["Karras", "Simple", "SGM Uniform", "Normal", "Exponential"]);
-guiControlPrepareNum("stage_process_seed_v");
-guiControlPrepareNum("stage_process_seed_i");
-guiControlPrepareOpt("stage_process_seed_d", ["HV", "VH", "H", "V"]);
-
-guiControlPrepareNum("stage_process_cfg_v");
-guiControlPrepareNum("stage_process_cfg_i");
-guiControlPrepareOpt("stage_process_cfg_d", ["HV", "VH", "H", "V"]);
-guiControlPrepareNum("stage_process_step_t_v");
-guiControlPrepareNum("stage_process_step_t_i");
-guiControlPrepareOpt("stage_process_step_t_d", ["HV", "VH", "H", "V"]);
-guiControlPrepareNum("stage_process_step_b_v");
-guiControlPrepareNum("stage_process_step_b_i");
-guiControlPrepareOpt("stage_process_step_b_d", ["HV", "VH", "H", "V"]);
-guiControlPrepareNum("stage_process_step_e_v");
-guiControlPrepareNum("stage_process_step_e_i");
-guiControlPrepareOpt("stage_process_step_e_d", ["HV", "VH", "H", "V"]);
-
-guiControlPrepareTxt("stage_process_prompt_posi");
-guiControlPrepareTxt("stage_process_prompt_nega");
-
-guiControlPrepareOpt("stage_stage_type", ["Image", "Process"]);
-
-
-guiControlPrepareOpt("stages", []);
-
-guiStageRefresh();
 
 
 
@@ -317,3 +310,79 @@ function guiItemNext()
         projectStageShow();
     }
 }
+
+function guiInit()
+{
+    guiControlPrepareNum("projectBatchW");
+    guiControlPrepareNum("projectBatchH");
+
+    guiControlPrepareTxt("stage_input_file");
+    guiControlPrepareNum("stage_input_width", ["xxx"]);
+    guiControlPrepareNum("stage_input_height", ["xxx"]);
+    guiControlPrepareNum("stage_input_row");
+    guiControlPrepareNum("stage_input_col");
+    guiControlPrepareNum("stage_input_zoom");
+    guiControlPrepareNum("stage_input_offsetx");
+    guiControlPrepareNum("stage_input_offsety");
+    guiControlPrepareCol("stage_input_color");
+    guiControlPrepareNum("stage_input_color_r");
+    guiControlPrepareNum("stage_input_color_g");
+    guiControlPrepareNum("stage_input_color_b");
+
+    guiControlPrepareNum("stage_process_source");
+    guiControlPrepareOpt("stage_process_source_type", ["Bitmap","Latent"]);
+    guiControlPrepareOpt("stage_process_type", ["Full","Begin","Middle","End"]);
+    guiControlPrepareOpt("stage_process_model", ["xxx"]);
+    guiControlPrepareOpt("stage_process_sampler", window.asm_env.data("gui", 1, "", "", "").substring(1).split('|'));
+    guiControlPrepareOpt("stage_process_scheduler", window.asm_env.data("gui", 2, "", "", "").substring(1).split('|'));
+    guiControlPrepareNum("stage_process_seed_v");
+    guiControlPrepareNum("stage_process_seed_i");
+    guiControlPrepareOpt("stage_process_seed_d", ["HV", "VH", "H", "V"]);
+
+    guiControlPrepareNum("stage_process_cfg_v");
+    guiControlPrepareNum("stage_process_cfg_i");
+    guiControlPrepareOpt("stage_process_cfg_d", ["HV", "VH", "H", "V"]);
+    guiControlPrepareNum("stage_process_step_t_v");
+    guiControlPrepareNum("stage_process_step_t_i");
+    guiControlPrepareOpt("stage_process_step_t_d", ["HV", "VH", "H", "V"]);
+    guiControlPrepareNum("stage_process_step_b_v");
+    guiControlPrepareNum("stage_process_step_b_i");
+    guiControlPrepareOpt("stage_process_step_b_d", ["HV", "VH", "H", "V"]);
+    guiControlPrepareNum("stage_process_step_e_v");
+    guiControlPrepareNum("stage_process_step_e_i");
+    guiControlPrepareOpt("stage_process_step_e_d", ["HV", "VH", "H", "V"]);
+    guiControlPrepareNum("stage_process_step_o_v");
+    guiControlPrepareNum("stage_process_step_o_i");
+    guiControlPrepareOpt("stage_process_step_o_d", ["HV", "VH", "H", "V"]);
+
+    guiControlPrepareTxt("stage_process_prompt_posi");
+    guiControlPrepareTxt("stage_process_prompt_nega");
+
+    guiControlPrepareOpt("stage_stage_type", ["Image", "Process"]);
+
+
+    guiControlPrepareOpt("stages", []);
+
+
+
+    for (let ctrl_i = 0; ctrl_i < 10; ctrl_i++)
+    {
+        for (let ctrl_ii = 0; ctrl_ii <= 2; ctrl_ii++)
+        {
+            guiControlPrepareOpt("mask_vis_" + ctrl_i + "" + ctrl_ii, ["None", "Posi", "Nega"]);
+            guiControlPrepareNum("mask_siz_" + ctrl_i + "" + ctrl_ii);
+            guiControlPrepareNum("mask_fea_" + ctrl_i + "" + ctrl_ii);
+        }
+    }
+    guiControlPrepareCol("stage_mask_color");
+    guiControlPrepareNum("stage_mask_color_r");
+    guiControlPrepareNum("stage_mask_color_g");
+    guiControlPrepareNum("stage_mask_color_b");
+
+    guiControlPrepareOpt("stage_mask_preview_1", ["None", "Gray", "Paint", "Post"]);
+    guiControlPrepareOpt("stage_mask_preview_2", ["None", "Dark", "Bright", "Dark/bright", "Bright/dark"]);
+
+
+    guiStageRefresh();
+}
+

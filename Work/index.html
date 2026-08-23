@@ -40,14 +40,22 @@
         <div id="screenContainer"><div id="screenWindow" style="width:100%;height:100vh;background-color:#000000;display:flex;justify-content:center;align-items:center;"><canvas width="100" height="100" id="screen"></canvas></div></div>
 
         <br>
-        <input type="button" value="Prev stage" onclick="guiItemPrev()">
-        <input type="button" value="Next stage" onclick="guiItemNext()">
-        <input type="button" value="Sep tab" onclick="screenNewWindow(0)">
-        <input type="button" value="Sep win" onclick="screenNewWindow(1)">
-        <input type="button" value="Down scr" onclick="graphDownloadCollage()">
-        <input type="button" value="Down img" onclick="graphDownloadImages()">
+        <div id="screenBtnsNormal">
+            <input type="button" value="Prev stage" onclick="guiItemPrev()">
+            <input type="button" value="Next stage" onclick="guiItemNext()">
+            <input type="button" value="Sep tab" onclick="screenNewWindow(0)">
+            <input type="button" value="Sep win" onclick="screenNewWindow(1)">
+            <input type="button" value="Down scr" onclick="graphDownloadCollage()">
+            <input type="button" value="Down img" onclick="graphDownloadImages()">
+        </div>
+        <div id="screenBtnsMask" style="display:none">
+            <input type="button" value="Add node" onclick="maskEditOp(2)">
+            <input type="button" value="Rem node" onclick="maskEditOp(3)">
+            <input type="button" value="Vec free" onclick="maskEditOp(11)">
+            <input type="button" value="Vec line" onclick="maskEditOp(12)">
+            <input type="button" value="Vec equal" onclick="maskEditOp(13)">
+        </div>
 
-        <br>
         <br>
         Zoom <span id="screenZ"></span>%<br>
         <input type="range" min="-40" max="40" value="20" id="screenZoom" oninput="screenRepaintAll()"><br>
@@ -57,6 +65,100 @@
         <input type="range" min="-100" max="100" value="0" id="screenOffsetY" oninput="screenRepaintAll()"><br>
         Screen size <span id="screenS"></span>%<br>
         <input type="range" min="0" max="100" value="50" id="screenSize" oninput="screenRepaintAll()"><br>
+
+
+        <div id="screenBtnsNormal0">
+            <input type="button" value="Open mask editor" onclick="maskEditOp(1)">
+        </div>
+        <div id="screenBtnsMask0" style="display:none">
+            <table border="1">
+                <tr><th rowspan="2">Figure</th><th colspan="3">Gray</th><th colspan="3">Paint</th><th colspan="3">Post</th></tr>
+                <tr><th>Usage</th><th>Size</th><th>Blur</th><th>Usage</th><th>Size</th><th>Blur</th><th>Usage</th><th>Size</th><th>Blur</th></tr>
+                <tr>
+                    <td><input type="button" value="[0]" id="maskEditSetFigureBtn0" onclick="maskEditSetFigure(0)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_00"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_00"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_00"></td>
+                    <td><select id="mask_vis_01"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_01"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_01"></td>
+                    <td><select id="mask_vis_02"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_02"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_02"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="1" id="maskEditSetFigureBtn1" onclick="maskEditSetFigure(1)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_10"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_10"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_10"></td>
+                    <td><select id="mask_vis_11"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_11"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_11"></td>
+                    <td><select id="mask_vis_12"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_12"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_12"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="2" id="maskEditSetFigureBtn2" onclick="maskEditSetFigure(2)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_20"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_20"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_20"></td>
+                    <td><select id="mask_vis_21"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_21"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_21"></td>
+                    <td><select id="mask_vis_22"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_22"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_22"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="3" id="maskEditSetFigureBtn3" onclick="maskEditSetFigure(3)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_30"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_30"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_30"></td>
+                    <td><select id="mask_vis_31"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_31"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_31"></td>
+                    <td><select id="mask_vis_32"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_32"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_32"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="4" id="maskEditSetFigureBtn4" onclick="maskEditSetFigure(4)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_40"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_40"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_40"></td>
+                    <td><select id="mask_vis_41"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_41"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_41"></td>
+                    <td><select id="mask_vis_42"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_42"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_42"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="5" id="maskEditSetFigureBtn5" onclick="maskEditSetFigure(5)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_50"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_50"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_50"></td>
+                    <td><select id="mask_vis_51"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_51"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_51"></td>
+                    <td><select id="mask_vis_52"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_52"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_52"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="6" id="maskEditSetFigureBtn6" onclick="maskEditSetFigure(6)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_60"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_60"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_60"></td>
+                    <td><select id="mask_vis_61"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_61"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_61"></td>
+                    <td><select id="mask_vis_62"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_62"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_62"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="7" id="maskEditSetFigureBtn7" onclick="maskEditSetFigure(7)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_70"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_70"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_70"></td>
+                    <td><select id="mask_vis_71"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_71"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_71"></td>
+                    <td><select id="mask_vis_72"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_72"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_72"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="8" id="maskEditSetFigureBtn8" onclick="maskEditSetFigure(8)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_80"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_80"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_80"></td>
+                    <td><select id="mask_vis_81"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_81"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_81"></td>
+                    <td><select id="mask_vis_82"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_82"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_82"></td>
+                </tr>
+                <tr>
+                    <td><input type="button" value="9" id="maskEditSetFigureBtn9" onclick="maskEditSetFigure(9)" style="width: 100%; min-width: 50px;"></td>
+                    <td><select id="mask_vis_90"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_90"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_90"></td>
+                    <td><select id="mask_vis_91"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_91"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_91"></td>
+                    <td><select id="mask_vis_92"></select></td><td><input type="number" value="0" min="-999" max="999" id="mask_siz_92"></td><td><input type="number" value="0" min="0" max="999" id="mask_fea_92"></td>
+                </tr>
+            </table>
+            <br>
+            <table border="1">
+                <tr>
+                    <td>Gray color</td><td><input type="color" value="#808080" id="stage_mask_color"></td>
+                </tr>
+                <tr>
+                    <td>Gray color R</td><td><input type="number" value="128" min="0" max="255" id="stage_mask_color_r"></td>
+                </tr>
+                <tr>
+                    <td>Gray color G</td><td><input type="number" value="128" min="0" max="255" id="stage_mask_color_g"></td>
+                </tr>
+                <tr>
+                    <td>Gray color B</td><td><input type="number" value="128" min="0" max="255" id="stage_mask_color_b"></td>
+                </tr>
+                <tr>
+                    <td>Preview type</td><td><select id="stage_mask_preview_1"></select></td>
+                </tr>
+                <tr>
+                    <td>Preview color</td><td><select id="stage_mask_preview_2"></select></td>
+                </tr>
+            </table>
+            <br>
+            <input type="button" value="Close mask editor" onclick="maskEditOp(0)">
+        </div>
 
 
         <hr size="10" noshade="yes">
@@ -82,7 +184,8 @@
             </tr>
         </table>
         <br>
-        <input type="button" onclick="projectStart()" value="Execute">
+        <input type="button" onclick="projectStart(0)" value="Execute">
+        <input type="button" onclick="projectStart(1)" value="Bypass">
         <input type="button" onclick="projectStageTest()" value="Test">
 
         <hr size="10" noshade="yes">
@@ -121,6 +224,18 @@
                     </tr>
                     <tr>
                         <td>Vert offset</td><td><input type="number" id="stage_input_offsety" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Margin color</td><td><input type="color" id="stage_input_color" value="#000000"></td>
+                    </tr>
+                    <tr>
+                        <td>Margin color R</td><td><input type="number" min="0" max="255" id="stage_input_color_r" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Margin color G</td><td><input type="number" min="0" max="255" id="stage_input_color_g" value="0"></td>
+                    </tr>
+                    <tr>
+                        <td>Margin color B</td><td><input type="number" min="0" max="255" id="stage_input_color_b" value="0"></td>
                     </tr>
                 </table>
             </div>
@@ -173,6 +288,9 @@
                         <td>Steps end</td><td><input type="number" id="stage_process_step_e_v" value="0"></td><td><input type="number" id="stage_process_step_e_i" value="0"></td><td><select id="stage_process_step_e_d"><option>XXX</option></select></td>
                     </tr>
                     <tr>
+                        <td>Steps offset</td><td><input type="number" id="stage_process_step_o_v" value="0"></td><td><input type="number" id="stage_process_step_o_i" value="0"></td><td><select id="stage_process_step_o_d"><option>XXX</option></select></td>
+                    </tr>
+                    <tr>
                         <td>Steps process</td><td colspan="3"><span id="stage_process_steps"></span></td>
                     </tr>
                     <tr>
@@ -206,6 +324,9 @@
         <script src="files.js"></script>
         <script src="graph.js"></script>
         <script src="gui.js"></script>
+        <script src="mask_cache.js"></script>
+        <script src="mask_edit.js"></script>
+        <script src="mask_data.js"></script>
         <script src="screen.js"></script>
         <script src="webreq.js"></script>
         <script src="project.js"></script>
@@ -358,6 +479,16 @@
                     graphCurrentParams = xx[1].split(',');
                     setTimeout(() => loadInputImage1("", graphPrefix(xx[2])), 1);
                 }
+                
+                if (x.startsWith("MASK"))
+                {
+                    const xx = x.split("\n");
+                    let maskStage = parseInt(xx[1]);
+                    let maskBmpW = parseInt(xx[2]);
+                    let maskBmpH = parseInt(xx[3]);
+                    let maskType = parseInt(xx[4]);
+                    setTimeout(() => js_callback(maskGenerate(maskStage, maskBmpW, maskBmpH, maskType)), 1);
+                }
             }
 
             function loadInputImage1(name, contents)
@@ -398,6 +529,7 @@
 
             init().then(() => {
             window.asm_env = Environment.new();
+            guiInit();
             projectConfig();
             });
         </script>

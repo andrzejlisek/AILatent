@@ -74,7 +74,7 @@ function projectSaveFinish()
     fileListDisp();
 }
 
-function projectStart()
+function projectStart(execType)
 {
     let stageList = document.getElementById("stages");
     let indices = "" + (stageList.length + 2) + "";
@@ -87,7 +87,7 @@ function projectStart()
     }
     const guiBatchW0 = parseInt(document.getElementById("projectBatchW").value);
     const guiBatchH0 = parseInt(document.getElementById("projectBatchH").value);
-    window.asm_env.startproc(guiBatchW0, guiBatchH0, indices);
+    window.asm_env.startproc(guiBatchW0, guiBatchH0, indices, execType);
 }
 
 
@@ -160,6 +160,7 @@ function projectConfigFinish(x)
         guiListAdd(engineList, engines[i]);
     }
     projectStageListRefresh();
+    maskInit();
     guiExecStop();
 }
 
@@ -182,6 +183,10 @@ function projectStageShow()
         document.getElementById("stage_input_zoom").value = window.asm_env.data("project_value_get", stage, "input_zoom", "", "");
         document.getElementById("stage_input_offsetx").value = window.asm_env.data("project_value_get", stage, "input_offsetx", "", "");
         document.getElementById("stage_input_offsety").value = window.asm_env.data("project_value_get", stage, "input_offsety", "", "");
+        document.getElementById("stage_input_color_r").value = window.asm_env.data("project_value_get", stage, "input_color_r", "", "");
+        document.getElementById("stage_input_color_g").value = window.asm_env.data("project_value_get", stage, "input_color_g", "", "");
+        document.getElementById("stage_input_color_b").value = window.asm_env.data("project_value_get", stage, "input_color_b", "", "");
+        guiInputValueColor(1, "stage_input_color", "stage_input_color_r", "stage_input_color_g", "stage_input_color_b");
         
         document.getElementById("stage_process_source").value = window.asm_env.data("project_value_get", stage, "process_source", "", "");
         document.getElementById("stage_process_source_type").selectedIndex = window.asm_env.data("project_value_get", stage, "process_source_type", "", "");
@@ -204,9 +209,14 @@ function projectStageShow()
         document.getElementById("stage_process_step_e_v").value = window.asm_env.data("project_value_get", stage, "process_step_e_v", "", "");
         document.getElementById("stage_process_step_e_i").value = window.asm_env.data("project_value_get", stage, "process_step_e_i", "", "");
         document.getElementById("stage_process_step_e_d").selectedIndex = window.asm_env.data("project_value_get", stage, "process_step_e_d", "", "");
+        document.getElementById("stage_process_step_o_v").value = window.asm_env.data("project_value_get", stage, "process_step_o_v", "", "");
+        document.getElementById("stage_process_step_o_i").value = window.asm_env.data("project_value_get", stage, "process_step_o_i", "", "");
+        document.getElementById("stage_process_step_o_d").selectedIndex = window.asm_env.data("project_value_get", stage, "process_step_o_d", "", "");
 
         document.getElementById("stage_process_prompt_posi").value = window.asm_env.data("project_value_get", stage, "process_prompt_posi", "", "");
         document.getElementById("stage_process_prompt_nega").value = window.asm_env.data("project_value_get", stage, "process_prompt_nega", "", "");
+
+        maskCtrlLoad();
 
         guiStageRefresh();
 
@@ -244,20 +254,30 @@ function projectStageSet(ctrl, t)
 
         if (t == 1)
         {
-            v = "" + ctrlObj.value + "";
+            const v = "" + ctrlObj.value + "";
             window.asm_env.data("project_value_set", stage, ctrl.substring(6), v, "")
         }
 
         if (t == 2)
         {
-            v = "" + ctrlObj.options[ctrlObj.selectedIndex].value + "";
+            const v = "" + ctrlObj.options[ctrlObj.selectedIndex].value + "";
             window.asm_env.data("project_value_set", stage, ctrl.substring(6), v, "")
         }
 
         if (t == 3)
         {
-            v = "" + ctrlObj.selectedIndex + "";
+            const v = "" + ctrlObj.selectedIndex + "";
             window.asm_env.data("project_value_set", stage, ctrl.substring(6), v, "")
+        }
+
+        if (t == 4)
+        {
+            const v_r = "" + document.getElementById(ctrl + "_r").value + "";
+            const v_g = "" + document.getElementById(ctrl + "_g").value + "";
+            const v_b = "" + document.getElementById(ctrl + "_b").value + "";
+            window.asm_env.data("project_value_set", stage, (ctrl + "_r").substring(6), v_r, "")
+            window.asm_env.data("project_value_set", stage, (ctrl + "_g").substring(6), v_g, "")
+            window.asm_env.data("project_value_set", stage, (ctrl + "_b").substring(6), v_b, "")
         }
     }
 }
@@ -280,9 +300,19 @@ function projectStageTest()
         let stage = stageList.selectedIndex;
 
         let serverAddr = window.asm_env.data("project_stage_data", stage, "", "", "").split(",")[2];
+        let serverType = window.asm_env.data("project_stage_data", stage, "", "", "").split(",")[3];
 
-        //serverAddr = serverAddr + "/object_info";
-        serverAddr = serverAddr + "/system_stats";
+        if (serverType == "comfyui")
+        {
+            //serverAddr = serverAddr + "/object_info";
+            serverAddr = serverAddr + "/system_stats";
+        }
+        if (serverType == "a1111")
+        {
+            serverAddr = serverAddr + "/config";
+            //serverAddr = serverAddr + "/info";
+        }
+        let serverInfo = serverType + "\n" + serverAddr;
 
         fetch(serverAddr)
         .then(_1 => {
@@ -292,7 +322,7 @@ function projectStageTest()
             }
             return _1.text();
         })
-        .then(_2 => projectStageTestPass(serverAddr, _2)).catch(_2 => projectStageTestFail(serverAddr, _2.message));
+        .then(_2 => projectStageTestPass(serverInfo, _2)).catch(_2 => projectStageTestFail(serverInfo, _2.message));
     }
 }
 
