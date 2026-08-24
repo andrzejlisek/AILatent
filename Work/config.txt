@@ -4,11 +4,11 @@ Server1Addr=http://127.0.0.1:8188
 Server2Type=a1111
 Server2Addr=http://127.0.0.1:7860
 
-EngineDefault=32
-EngineList=1,2,3,4,5,6,7,8,11,12,13,21,22,23,32,31,24,25,33,34,203,204
+EngineList=1,11,2,12,3,13,4,14,5,15,6,16,7,17,8,18,21,31,22,32,23,33,24,34,25,35
+EngineDefault=21
 
 Engine1Server=1
-Engine1Name=SD 1.5 - base
+Engine1Name=SD 1.5 - base - ComfyUI
 Engine1Type=0
 Engine1Model=v1-5-pruned-emaonly.safetensors
 Engine1Steps=20
@@ -16,8 +16,17 @@ Engine1Cfg=70
 Engine1Sampler=DPM++ 2M
 Engine1Scheduler=Karras
 
+Engine11Server=2
+Engine11Name=SD 1.5 - base - A1111
+Engine11Type=0
+Engine11Model=v1-5-pruned-emaonly.safetensors
+Engine11Steps=20
+Engine11Cfg=70
+Engine11Sampler=DPM++ 2M
+Engine11Scheduler=Karras
+
 Engine2Server=1
-Engine2Name=SD 1.5 - inpaint
+Engine2Name=SD 1.5 - inpaint - ComfyUI
 Engine2Type=0
 Engine2Model=v1-5-inpainting.ckpt
 Engine2Steps=20
@@ -25,8 +34,17 @@ Engine2Cfg=70
 Engine2Sampler=DPM++ 2M
 Engine2Scheduler=Karras
 
+Engine12Server=2
+Engine12Name=SD 1.5 - inpaint - A1111
+Engine12Type=0
+Engine12Model=v1-5-inpainting.ckpt
+Engine12Steps=20
+Engine12Cfg=70
+Engine12Sampler=DPM++ 2M
+Engine12Scheduler=Karras
+
 Engine3Server=1
-Engine3Name=SD 1.5 - RealVis 5.1 - base
+Engine3Name=SD 1.5 - RealVis 5.1 - base - ComfyUI
 Engine3Type=0
 Engine3Model=Realistic_Vision_V5.1_fp16-no-ema.safetensors
 Engine3Steps=20
@@ -34,8 +52,17 @@ Engine3Cfg=70
 Engine3Sampler=DPM++ 2M
 Engine3Scheduler=Karras
 
+Engine13Server=2
+Engine13Name=SD 1.5 - RealVis 5.1 - base - A1111
+Engine13Type=0
+Engine13Model=Realistic_Vision_V5.1_fp16-no-ema.safetensors
+Engine13Steps=20
+Engine13Cfg=70
+Engine13Sampler=DPM++ 2M
+Engine13Scheduler=Karras
+
 Engine4Server=1
-Engine4Name=SD 1.5 - RealVis 5.1 - inpaint
+Engine4Name=SD 1.5 - RealVis 5.1 - inpaint - ComfyUI
 Engine4Type=0
 Engine4Model=Realistic_Vision_V5.1_fp16-no-ema-inpainting.safetensors
 Engine4Steps=20
@@ -43,8 +70,17 @@ Engine4Cfg=70
 Engine4Sampler=DPM++ 2M
 Engine4Scheduler=Karras
 
+Engine14Server=2
+Engine14Name=SD 1.5 - RealVis 5.1 - inpaint - A1111
+Engine14Type=0
+Engine14Model=Realistic_Vision_V5.1_fp16-no-ema-inpainting.safetensors
+Engine14Steps=20
+Engine14Cfg=70
+Engine14Sampler=DPM++ 2M
+Engine14Scheduler=Karras
+
 Engine5Server=1
-Engine5Name=SD 1.5 - DreamShaper 8 - base
+Engine5Name=SD 1.5 - DreamShaper 8 - base - ComfyUI
 Engine5Type=0
 Engine5Model=dreamshaper_8.safetensors
 Engine5Steps=20
@@ -52,8 +88,17 @@ Engine5Cfg=70
 Engine5Sampler=DPM++ 2M
 Engine5Scheduler=Karras
 
+Engine15Server=2
+Engine15Name=SD 1.5 - DreamShaper 8 - base - A1111
+Engine15Type=0
+Engine15Model=dreamshaper_8.safetensors
+Engine15Steps=20
+Engine15Cfg=70
+Engine15Sampler=DPM++ 2M
+Engine15Scheduler=Karras
+
 Engine6Server=1
-Engine6Name=SD 1.5 - DreamShaper 8 - inpaint
+Engine6Name=SD 1.5 - DreamShaper 8 - inpaint - ComfyUI
 Engine6Type=0
 Engine6Model=dreamshaper_8Inpainting.safetensors
 Engine6Steps=20
@@ -61,8 +106,17 @@ Engine6Cfg=70
 Engine6Sampler=DPM++ 2M
 Engine6Scheduler=Karras
 
+Engine16Server=2
+Engine16Name=SD 1.5 - DreamShaper 8 - inpaint - A1111
+Engine16Type=0
+Engine16Model=dreamshaper_8Inpainting.safetensors
+Engine16Steps=20
+Engine16Cfg=70
+Engine16Sampler=DPM++ 2M
+Engine16Scheduler=Karras
+
 Engine7Server=1
-Engine7Name=SD 1.5 - Deliberate v6 * base
+Engine7Name=SD 1.5 - Deliberate v6 - base - ComfyUI
 Engine7Type=0
 Engine7Model=Deliberate_v6.safetensors
 Engine7Steps=20
@@ -70,8 +124,17 @@ Engine7Cfg=70
 Engine7Sampler=DPM++ 2M
 Engine7Scheduler=Karras
 
+Engine17Server=2
+Engine17Name=SD 1.5 - Deliberate v6 - base - A1111
+Engine17Type=0
+Engine17Model=Deliberate_v6.safetensors
+Engine17Steps=20
+Engine17Cfg=70
+Engine17Sampler=DPM++ 2M
+Engine17Scheduler=Karras
+
 Engine8Server=1
-Engine8Name=SD 1.5 - Deliberate v6 * inpaint
+Engine8Name=SD 1.5 - Deliberate v6 - inpaint - ComfyUI
 Engine8Type=0
 Engine8Model=Deliberate_v6-inpainting.safetensors
 Engine8Steps=20
@@ -79,37 +142,17 @@ Engine8Cfg=70
 Engine8Sampler=DPM++ 2M
 Engine8Scheduler=Karras
 
-
-Engine11Server=1
-Engine11Name=SD 2.1 512 - base
-Engine11Type=0
-Engine11Model=v2-1_512-ema-pruned.safetensors
-Engine11Steps=20
-Engine11Cfg=70
-Engine11Sampler=DPM++ 2M
-Engine11Scheduler=Karras
-
-Engine12Server=1
-Engine12Name=SD 2.1 512 - inpaint
-Engine12Type=0
-Engine12Model=v2-1_512-inpainting-ema.safetensors
-Engine12Steps=20
-Engine12Cfg=70
-Engine12Sampler=DPM++ 2M
-Engine12Scheduler=Karras
-
-Engine13Server=1
-Engine13Name=SD 2.1 768
-Engine13Type=0
-Engine13Model=v2-1_768-ema-pruned.safetensors
-Engine13Steps=20
-Engine13Cfg=70
-Engine13Sampler=DPM++ 2M
-Engine13Scheduler=Karras
-
+Engine18Server=2
+Engine18Name=SD 1.5 - Deliberate v6 - inpaint - A1111
+Engine18Type=0
+Engine18Model=Deliberate_v6-inpainting.safetensors
+Engine18Steps=20
+Engine18Cfg=70
+Engine18Sampler=DPM++ 2M
+Engine18Scheduler=Karras
 
 Engine21Server=1
-Engine21Name=SDXL 1.0 base
+Engine21Name=SDXL 1.0 base - ComfyUI
 Engine21Type=0
 Engine21Model=sd_xl_base_1.0.safetensors
 Engine21Steps=20
@@ -117,8 +160,17 @@ Engine21Cfg=70
 Engine21Sampler=DPM++ 2M
 Engine21Scheduler=Karras
 
+Engine31Server=2
+Engine31Name=SDXL 1.0 base - A1111
+Engine31Type=0
+Engine31Model=sd_xl_base_1.0.safetensors
+Engine31Steps=20
+Engine31Cfg=70
+Engine31Sampler=DPM++ 2M
+Engine31Scheduler=Karras
+
 Engine22Server=1
-Engine22Name=SDXL 1.0 refiner
+Engine22Name=SDXL 1.0 refiner - ComfyUI
 Engine22Type=1
 Engine22Model=sd_xl_refiner_1.0.safetensors
 Engine22Steps=20
@@ -126,8 +178,17 @@ Engine22Cfg=70
 Engine22Sampler=DPM++ 2M
 Engine22Scheduler=Karras
 
+Engine32Server=2
+Engine32Name=SDXL 1.0 refiner - A1111
+Engine32Type=1
+Engine32Model=sd_xl_refiner_1.0.safetensors
+Engine32Steps=20
+Engine32Cfg=70
+Engine32Sampler=DPM++ 2M
+Engine32Scheduler=Karras
+
 Engine23Server=1
-Engine23Name=SDXL - Juggernaut XL v9
+Engine23Name=SDXL - Juggernaut XL v9 - ComfyUI
 Engine23Type=0
 Engine23Model=Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors
 Engine23Steps=20
@@ -135,27 +196,17 @@ Engine23Cfg=70
 Engine23Sampler=DPM++ 2M
 Engine23Scheduler=Karras
 
-Engine32Server=2
-Engine32Name=SDXL - Juggernaut XL v9 A1111
-Engine32Type=0
-Engine32Model=Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors
-Engine32Steps=20
-Engine32Cfg=70
-Engine32Sampler=DPM++ 2M
-Engine32Scheduler=Karras
-
-Engine31Server=2
-Engine31Name=SDXL - EpicRealism XL 17 A1111
-Engine31Type=0
-Engine31Model=epicrealismXL_vxviiCrystalclear.safetensors
-Engine31Steps=20
-Engine31Cfg=70
-Engine31Sampler=DPM++ 2M
-Engine31Scheduler=Karras
-
+Engine33Server=2
+Engine33Name=SDXL - Juggernaut XL v9 - A1111
+Engine33Type=0
+Engine33Model=Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors
+Engine33Steps=20
+Engine33Cfg=70
+Engine33Sampler=DPM++ 2M
+Engine33Scheduler=Karras
 
 Engine24Server=1
-Engine24Name=SDXL - RealVis XL 5.0
+Engine24Name=SDXL - RealVis XL 5.0 - ComfyUI
 Engine24Type=0
 Engine24Model=RealVisXL_V5.0_fp16.safetensors
 Engine24Steps=20
@@ -163,8 +214,17 @@ Engine24Cfg=70
 Engine24Sampler=DPM++ 2M
 Engine24Scheduler=Karras
 
+Engine34Server=2
+Engine34Name=SDXL - RealVis XL 5.0 - A1111
+Engine34Type=0
+Engine34Model=RealVisXL_V5.0_fp16.safetensors
+Engine34Steps=20
+Engine34Cfg=70
+Engine34Sampler=DPM++ 2M
+Engine34Scheduler=Karras
+
 Engine25Server=1
-Engine25Name=SDXL - EpicRealism XL 17
+Engine25Name=SDXL - EpicRealism XL 17 - ComfyUI
 Engine25Type=0
 Engine25Model=epicrealismXL_vxviiCrystalclear.safetensors
 Engine25Steps=20
@@ -172,45 +232,12 @@ Engine25Cfg=70
 Engine25Sampler=DPM++ 2M
 Engine25Scheduler=Karras
 
-
-Engine33Server=1
-Engine33Name=SD 3.5
-Engine33Type=1
-Engine33Model=aaa_sd3.5_large_fp8_scaled.safetensors
-Engine33Steps=20
-Engine33Cfg=40
-Engine33Sampler=Euler
-Engine33Scheduler=Normal
-
-Engine34Server=1
-Engine34Name=FLUX.1
-Engine34Type=1
-Engine34Model=aaa_flux1-dev-fp8.safetensors
-Engine34Steps=20
-Engine34Cfg=10
-Engine34Sampler=Euler
-Engine34Scheduler=Normal
-
-
-Engine203Server=1
-Engine203Name=Z-Image REMOVED
-Engine203Type=1
-Engine203ModelText=z_image_qwen_3_4b.safetensors
-Engine203ModelDiffusion=z_image_turbo_bf16.safetensors
-Engine203ModelVae=z_image_ae.safetensors
-Engine203Steps=4
-Engine203Cfg=10
-Engine203Sampler=Euler
-Engine203Scheduler=Simple
-
-Engine204Server=1
-Engine204Name=OmniGen 2 REMOVED
-Engine204Type=1
-Engine204ModelText=omnigen2_qwen_2.5_vl_fp16.safetensors
-Engine204ModelDiffusion=omnigen2_fp16.safetensors
-Engine204ModelVae=omnigen2_ae.safetensors
-Engine204Steps=20
-Engine204Cfg=40
-Engine204Sampler=Euler
-Engine204Scheduler=Simple
+Engine35Server=2
+Engine35Name=SDXL - EpicRealism XL 17 - A1111
+Engine35Type=0
+Engine35Model=epicrealismXL_vxviiCrystalclear.safetensors
+Engine35Steps=20
+Engine35Cfg=70
+Engine35Sampler=DPM++ 2M
+Engine35Scheduler=Karras
 
